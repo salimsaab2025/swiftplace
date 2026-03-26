@@ -1409,8 +1409,9 @@
                                 <div class="list-item-content">
                                     Dementia + Nursing • CR0 area • £850/week
                                 </div>
-                                <div class="list-item-meta">
-                                    Posted 4 hours ago
+                                <div class="list-item-meta" style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span>Posted 4 hours ago</span>
+                                    <button class="btn btn-outline btn-small" onclick="event.stopPropagation();shareRequest()" style="padding:4px 8px;font-size:11px;">📤 Share</button>
                                 </div>
                             </div>
 
@@ -1476,6 +1477,10 @@
                             <button class="btn btn-secondary btn-small" onclick="showCommissionerDashboard()">← Back</button>
                         </div>
                         <div class="section-subtitle">Dementia + Nursing • CR0 area • £850/week budget</div>
+
+                        <div style="display:flex;gap:8px;margin-bottom:12px;">
+                            <button class="btn btn-outline btn-small" onclick="shareRequest()" style="display:flex;align-items:center;gap:4px;">📤 Share with colleague</button>
+                        </div>
 
                         <div class="comparison-controls">
                             <button class="btn btn-outline btn-small sort-btn active" onclick="sortResponses('price')">Price</button>
@@ -1589,12 +1594,6 @@
                         </div>
 
                         <div class="form-group-posting">
-                            <label class="form-label-posting">Service user</label>
-                            <div style="display:flex;gap:8px;margin-bottom:16px;">
-                                <button class="pill-btn selected" onclick="switchServiceUser(this,'adult')" style="flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:2px solid var(--teal);background:rgba(13,148,136,0.08);color:var(--teal-dark);font-family:inherit;">👤 Adult</button>
-                                <button class="pill-btn" onclick="switchServiceUser(this,'child')" style="flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:2px solid var(--gray-200);background:white;color:var(--gray-600);font-family:inherit;">👶 Children's</button>
-                            </div>
-
                             <label class="form-label-posting">Location</label>
                             <div style="position:relative;margin-bottom:12px;">
                                 <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;">📍</span>
@@ -1662,8 +1661,8 @@
                                     <div>Respite</div>
                                 </button>
                             </div>
-                            <!-- Children's care types (hidden by default) -->
-                            <div class="care-grid" id="childCareGrid" style="display:none;">
+                            <!-- Children's care types (disabled for now) -->
+                            <div class="care-grid" id="childCareGrid" style="display:none !important;">
                                 <button class="care-btn" onclick="selectCare(this)">
                                     <div class="care-icon">🏠</div>
                                     <div>Residential</div>
@@ -1746,8 +1745,8 @@
                                 </div>
                             </div>
                             </div>
-                            <!-- Children's additional needs (hidden by default) -->
-                            <div id="childNeeds" style="display:none;">
+                            <!-- Children's additional needs (disabled for now) -->
+                            <div id="childNeeds" style="display:none !important;">
                             <div class="toggle-list">
                                 <div class="toggle-item">
                                     <div class="toggle-label">Self-harm risk</div>
@@ -2179,7 +2178,7 @@
                             <div class="card-content" style="text-align: center;">
                                 <div style="font-weight: 600; color: var(--gray-700);">Success Fee</div>
                                 <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
-                                    If placement confirmed after 30 days: £1,079 (2.5% of £43,160 annual value).
+                                    If placement confirmed after 30 days: £1,726 (4% of £43,160 annual value).
                                     <br><span style="color:var(--teal-dark);font-weight:500;">This placement generates £43,160/yr in revenue for you.</span>
                                 </div>
                             </div>
@@ -2787,7 +2786,7 @@ SwiftPlace™ — The right bed, found fast.
                         <div style="background:var(--gray-50);border-left:4px solid var(--purple);border-radius:0 8px 8px 0;padding:14px;font-size:12px;color:var(--gray-600);">
                             <div>→ Add 2 neighbouring LAs + 1 hospital</div>
                             <div>→ Extend to community placements</div>
-                            <div>→ Activate success fee (£200 floor / 2.5%)</div>
+                            <div>→ Activate success fee (£200 floor / 4%)</div>
                             <div>→ Premium features beta</div>
                             <div>→ Trade association partnerships</div>
                             <div style="margin-top:8px;background:#dcfce7;color:var(--green);display:inline-block;padding:4px 10px;border-radius:6px;font-weight:600;">✅ Milestone: 300+ homes, revenue live</div>
@@ -2818,7 +2817,7 @@ SwiftPlace™ — The right bed, found fast.
                         <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--teal-dark);">£5.4M</div><div style="font-size:11px;color:var(--gray-500);">Year 3</div></div>
                     </div>
                     <div style="background:rgba(13,148,136,0.05);border:1px solid rgba(13,148,136,0.2);border-radius:10px;padding:12px;font-size:12px;color:var(--gray-700);">
-                        <strong style="color:var(--teal-dark);">Fee model:</strong> Higher of £200 flat or 2.5% of annual placement value. Commissioners never pay. Homes only pay on confirmed 30+ day placements.
+                        <strong style="color:var(--teal-dark);">Fee model:</strong> Higher of £200 flat or 4% of annual placement value. Commissioners never pay. Homes only pay on confirmed 30+ day placements.
                     </div>
                 </div>
 
@@ -2890,7 +2889,7 @@ SwiftPlace™ — The right bed, found fast.
                         <div style="display:flex;background:#dcfce7;">
                             <div style="flex:2;padding:8px 12px;font-weight:700;color:var(--green);">Net gain</div>
                             <div style="flex:2;padding:8px 12px;color:var(--gray-400);">—</div>
-                            <div style="flex:2;padding:8px 12px;color:var(--green);font-weight:700;">Fee = 2.5% of revenue</div>
+                            <div style="flex:2;padding:8px 12px;color:var(--green);font-weight:700;">Fee = 4% of revenue</div>
                         </div>
                     </div>
 
@@ -3052,7 +3051,7 @@ SwiftPlace™ — The right bed, found fast.
                 let reply = '';
                 const lower = msg.toLowerCase();
                 if (lower.includes('fee') || lower.includes('cost') || lower.includes('price')) {
-                    reply = 'Success fee is the higher of <strong>£200 or 2.5% of annual placement value</strong>. You only pay on confirmed placements lasting 30+ days. Commissioners never pay.';
+                    reply = 'Success fee is the higher of <strong>£200 or 4% of annual placement value</strong>. You only pay on confirmed placements lasting 30+ days. Commissioners never pay.';
                 } else if (lower.includes('gdpr') || lower.includes('data') || lower.includes('privacy')) {
                     reply = 'SwiftPlace only handles <strong>anonymised, non-identifiable data</strong> — care type, budget, location, urgency. No patient names, NHS numbers, or clinical records ever touch our platform. Once matched, Delphi operates under the care home\'s data processing agreement.';
                 } else if (lower.includes('how') && lower.includes('work')) {
@@ -3450,6 +3449,24 @@ SwiftPlace™ — The right bed, found fast.
                 updateResponseCharCount();
             }
         });
+
+        // Share with colleague
+        function shareRequest() {
+            const shareData = {
+                title: 'SwiftPlace — Placement Request',
+                text: 'I\'m reviewing bids for a care placement. Take a look and let me know your thoughts.',
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                // Fallback: copy to clipboard
+                const text = 'SwiftPlace Placement Request\n\nI\'m reviewing bids for a care placement on SwiftPlace. Take a look:\n' + window.location.href;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📋 Link copied to clipboard.\n\nPaste it in an email or message to share with your colleague.');
+                });
+            }
+        }
 
         // Nav helpers
         function setActiveNav(el) {
