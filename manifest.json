@@ -1,0 +1,24 @@
+{
+  "name": "SwiftPlace",
+  "short_name": "SwiftPlace",
+  "description": "The right bed, found fast. Care placement platform for commissioners and care homes.",
+  "start_url": "/swiftplace/full-system.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/swiftplace/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/swiftplace/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
