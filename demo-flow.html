@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftPlace — Live Demo Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f172a;
+            --teal: #0d9488;
+            --teal-light: #5eead4;
+            --teal-dark: #0f766e;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --white: #ffffff;
+            --red: #dc2626;
+            --green: #16a34a;
+            --blue: #2563eb;
+            --purple: #7c3aed;
+            --orange: #ea580c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--gray-100);
+            color: var(--navy);
+        }
+
+        .app {
+            max-width: 430px;
+            margin: 0 auto;
+            background: var(--white);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { display: flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 32px; height: 32px; background: var(--teal); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 18px; }
+        .logo-text { font-weight: 700; font-size: 16px; }
+        .logo-tag { font-size: 9px; color: var(--teal); font-weight: 500; }
+
+        .view-label {
+            background: var(--gray-100);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+        }
+
+        /* Screen */
+        .screen { display: none; padding: 0; }
+        .screen.active { display: block; }
+
+        .section { padding: 20px; }
+
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            gap: 4px;
+            padding: 12px 20px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--gray-200);
+        }
+        .progress-step.done { background: var(--teal); }
+        .progress-step.current { background: var(--teal-light); }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+            transition: all 0.15s;
+        }
+        .btn-primary { background: var(--teal); color: white; }
+        .btn-primary:hover { background: var(--teal-dark); }
+        .btn-dark { background: var(--navy); color: white; }
+        .btn-outline { background: white; color: var(--navy); border: 1px solid var(--gray-300); }
+        .btn-sm { padding: 8px 14px; font-size: 12px; width: auto; }
+
+        /* Narration bar */
+        .narrator {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            color: white;
+            padding: 14px 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .narrator-icon { font-size: 18px; }
+        .narrator-text { flex: 1; line-height: 1.4; }
+        .narrator strong { color: #a5b4fc; }
+
+        /* Notification animation */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .notification {
+            background: var(--navy);
+            color: white;
+            margin: 12px 20px;
+            border-radius: 12px;
+            padding: 14px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .bid-card {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Response comparison */
+        .response-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .response-card:hover { border-color: var(--teal); background: rgba(13,148,136,0.02); }
+        .response-card.selected { border-color: var(--teal); background: rgba(13,148,136,0.05); }
+
+        /* Badge */
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .badge-red { background: #fef2f2; color: var(--red); }
+        .badge-green { background: #dcfce7; color: var(--green); }
+        .badge-blue { background: #dbeafe; color: var(--blue); }
+        .badge-teal { background: #f0fdfa; color: var(--teal-dark); }
+        .badge-purple { background: #ede9fe; color: var(--purple); }
+        .badge-orange { background: #fff7ed; color: var(--orange); }
+
+        /* Connection reveal */
+        .reveal {
+            text-align: center;
+            padding: 32px 20px;
+        }
+        .reveal-icon { font-size: 48px; margin-bottom: 12px; }
+        .reveal-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+        .reveal-sub { font-size: 14px; color: var(--gray-500); }
+
+        /* Delphi concierge */
+        .delphi-box {
+            background: linear-gradient(135deg, #0f172a, #1e3a5f);
+            border-radius: 12px;
+            padding: 18px;
+            color: white;
+            margin: 16px 0;
+        }
+        .delphi-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .delphi-step.active { background: rgba(255,255,255,0.08); }
+        .delphi-step.pending { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); }
+
+        /* Bottom nav */
+        .bottom-action {
+            position: sticky;
+            bottom: 0;
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">S</div>
+            <div>
+                <div class="logo-text">SwiftPlace</div>
+                <div class="logo-tag">The right bed, found fast.</div>
+            </div>
+        </div>
+        <div class="view-label" id="viewLabel">👤 Commissioner</div>
+    </header>
+
+    <!-- SCREEN 1: Commissioner posts request -->
+    <div class="screen active" id="screen1">
+        <div class="narrator">
+            <span class="narrator-icon">📖</span>
+            <span class="narrator-text"><strong>Scene:</strong> Sarah, discharge coordinator at Croydon University Hospital, has a patient who needs a dementia nursing bed by Friday. She opens SwiftPlace on her phone.</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-step current"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+        <div class="section">
+            <div style="font-size:18px;font-weight:700;margin-bottom:4px;">New Placement Request</div>
+            <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">60-second posting · anonymous until match</div>
+
+            <!-- Filled form summary -->
+            <div class="card" style="background:var(--gray-50);">
+                <div style="font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Request Summary</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Service user</span>
+                        <span style="font-weight:600;">👤 Adult</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Location</span>
+                        <span style="font-weight:600;">📍 CR7 7YE · 10mi radius</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Care type</span>
+                        <span style="font-weight:600;">🧠 Dementia + 🏥 Nursing</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Additional needs</span>
+                        <span style="font-weight:600;">PEG feed · Wandering risk</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Budget</span>
+                        <span style="font-weight:600;">£900/week</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Urgency</span>
+                        <span style="font-weight:600;">🔴 24 hours (discharge Friday)</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;">
+                        <span style="color:var(--gray-500);">Funding</span>
+                        <span style="font-weight:600;">CHC Funded</span>
+                    </div>
+                    <div style="padding-top:8px;border-top:1px solid var(--gray-200);font-size:12px;color:var(--gray-500);">
+                        Notes: 82yr male, advanced dementia, requires specialist dementia unit with PEG experience. Family in Croydon area — proximity important.
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#f0fdfa;border-radius:10px;padding:12px;font-size:13px;color:var(--teal-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                <span>🏠</span> 28 care homes within radius will be notified
+            </div>
+        </div>
+        <div class="bottom-action">
+            <button class="btn btn-primary" onclick="postRequest()">⚡ Post Request</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: Request posted, notifications going out -->
+    <div class="screen" id="screen2">
+        <div class="narrator">
+            <span class="narrator-icon">📖</span>
+            <span class="narrator-text"><strong>Posted in 47 seconds.</strong> The request is now anonymous — "Placement #4826." 28 matching care homes are being notified right now.</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-step done"></div>
+            <div class="progress-step current"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+        <div class="section">
+            <div style="text-align:center;padding:20px 0;">
+                <div style="font-size:48px;margin-bottom:8px;">✅</div>
+                <div style="font-size:20px;font-weight:700;">Request #4826 Posted</div>
+                <div style="font-size:14px;color:var(--gray-500);margin-top:4px;">Dementia + Nursing · £900/wk · CR7 · 🔴 24hrs</div>
+            </div>
+
+            <div style="background:var(--gray-50);border-radius:12px;padding:16px;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <span style="font-size:14px;font-weight:600;">Notifications sent</span>
+                    <span style="font-size:13px;color:var(--teal);font-weight:600;">28 homes</span>
+                </div>
+                <div style="background:var(--teal);height:6px;border-radius:3px;overflow:hidden;">
+                    <div style="background:var(--teal-light);height:100%;width:100%;animation:pulse 1.5s infinite;"></div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:8px;">Homes are receiving your request now. You'll get a push alert when bids come in.</div>
+            </div>
+
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--gray-700);">What happens next:</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
+                    <span style="color:var(--teal);">1.</span> Matching care homes review your anonymous request
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
+                    <span style="color:var(--teal);">2.</span> They respond with price and availability
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
+                    <span style="color:var(--teal);">3.</span> You compare bids and select the best match
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
+                    <span style="color:var(--teal);">4.</span> Identity revealed — direct connection made
+                </div>
+            </div>
+        </div>
+        <div class="bottom-action">
+            <button class="btn btn-dark" onclick="showCareHomeNotifications()">📱 Switch to Care Home View →</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: Care Home receives notification (Thistle Hill Hall) -->
+    <div class="screen" id="screen3">
+        <div class="narrator">
+            <span class="narrator-icon">📖</span>
+            <span class="narrator-text"><strong>Meanwhile at Thistle Hill Hall...</strong> The care home manager gets a push notification. They open SwiftPlace and see the anonymous request.</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step current"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+        <div class="section">
+            <div class="notification">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-size:11px;font-weight:600;color:var(--teal-light);">🔔 NEW PLACEMENT ALERT</span>
+                    <span style="font-size:11px;color:rgba(255,255,255,0.5);">Just now</span>
+                </div>
+                <div style="font-size:14px;font-weight:600;">Dementia + Nursing · £900/wk · 4.2mi from you</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">🔴 URGENT — 24 hours · CHC Funded · PEG feed required</div>
+            </div>
+
+            <!-- Request detail -->
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+                    <div>
+                        <div style="font-size:16px;font-weight:700;">#4826 · Dementia + Nursing</div>
+                        <div style="font-size:12px;color:var(--gray-500);margin-top:2px;">82yr male · PEG feed · Wandering risk</div>
+                    </div>
+                    <span class="badge badge-red">🔴 24HRS</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+                    <span class="badge badge-teal">📍 4.2mi away</span>
+                    <span class="badge badge-blue">💰 £900/wk budget</span>
+                    <span class="badge badge-orange">CHC Funded</span>
+                </div>
+                <div style="font-size:12px;color:var(--gray-500);padding:10px;background:var(--gray-50);border-radius:8px;margin-bottom:12px;">
+                    Advanced dementia, requires specialist unit with PEG experience. Family nearby — proximity important.
+                </div>
+                <div style="font-size:12px;color:var(--gray-400);">0 responses yet · Be first to respond</div>
+            </div>
+
+            <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--gray-700);">Your response:</div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:12px;text-align:center;border:2px solid var(--teal);">
+                    <div style="font-size:10px;color:var(--gray-400);font-weight:600;">WEEKLY RATE</div>
+                    <div style="font-size:20px;font-weight:800;color:var(--navy);margin-top:2px;">£870</div>
+                </div>
+                <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:12px;text-align:center;border:2px solid var(--teal);">
+                    <div style="font-size:10px;color:var(--gray-400);font-weight:600;">AVAILABLE</div>
+                    <div style="font-size:20px;font-weight:800;color:var(--navy);margin-top:2px;">Today</div>
+                </div>
+            </div>
+            <div style="font-size:12px;color:var(--gray-500);background:var(--gray-50);border-radius:8px;padding:10px;margin-bottom:12px;">
+                "Specialist dementia unit with experienced PEG care team. En-suite room available on ground floor."
+            </div>
+        </div>
+        <div class="bottom-action">
+            <button class="btn btn-primary" onclick="submitBid1()">✅ Submit Bid — Thistle Hill Hall</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: More bids come in -->
+    <div class="screen" id="screen4">
+        <div class="narrator">
+            <span class="narrator-icon">📖</span>
+            <span class="narrator-text"><strong>2 hours later.</strong> Three care homes have responded. Sarah gets a push notification and opens her bids comparison.</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step current"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+        <div class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div>
+                    <div style="font-size:16px;font-weight:700;">Request #4826</div>
+                    <div style="font-size:12px;color:var(--gray-500);">3 bids received · Tap to select</div>
+                </div>
+                <span class="badge badge-green">3 BIDS</span>
+            </div>
+
+            <!-- Bid A: Thistle Hill Hall -->
+            <div class="response-card bid-card" onclick="selectBid(this, 'A')">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:14px;font-weight:700;">Home A</div>
+                        <div style="font-size:11px;color:var(--gray-500);">CQC Outstanding ⭐⭐⭐⭐ · 4.2mi</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:18px;font-weight:800;color:var(--teal);">£870/wk</div>
+                        <div style="font-size:11px;color:var(--gray-400);">Available today</div>
+                    </div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:6px;padding:8px;">
+                    "Specialist dementia unit with experienced PEG care team. En-suite room available on ground floor."
+                </div>
+                <div style="display:flex;gap:4px;margin-top:8px;">
+                    <span class="badge badge-green">Specialist Dementia</span>
+                    <span class="badge badge-teal">PEG Experienced</span>
+                    <span class="badge badge-blue">En-suite</span>
+                </div>
+            </div>
+
+            <!-- Bid B: Roefield -->
+            <div class="response-card bid-card" onclick="selectBid(this, 'B')" style="animation-delay:0.1s;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:14px;font-weight:700;">Home B</div>
+                        <div style="font-size:11px;color:var(--gray-500);">CQC Good ⭐⭐⭐ · 6.1mi</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:18px;font-weight:800;color:var(--teal);">£850/wk</div>
+                        <div style="font-size:11px;color:var(--gray-400);">Available Thursday</div>
+                    </div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:6px;padding:8px;">
+                    "Nursing unit with dementia wing. PEG care available. Shared room initially, single available next week."
+                </div>
+                <div style="display:flex;gap:4px;margin-top:8px;">
+                    <span class="badge badge-teal">Nursing + Dementia</span>
+                    <span class="badge badge-blue">PEG Available</span>
+                </div>
+            </div>
+
+            <!-- Bid C: Thistle Manor -->
+            <div class="response-card bid-card" onclick="selectBid(this, 'C')" style="animation-delay:0.2s;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:14px;font-weight:700;">Home C</div>
+                        <div style="font-size:11px;color:var(--gray-500);">CQC Good ⭐⭐⭐ · 8.7mi</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:18px;font-weight:800;color:var(--teal);">£920/wk</div>
+                        <div style="font-size:11px;color:var(--gray-400);">Available today</div>
+                    </div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:6px;padding:8px;">
+                    "Premium dementia care with 1:1 hours. Large garden, therapy room. Experienced with complex PEG and behavioural needs."
+                </div>
+                <div style="display:flex;gap:4px;margin-top:8px;">
+                    <span class="badge badge-purple">Premium Dementia</span>
+                    <span class="badge badge-green">1:1 Available</span>
+                    <span class="badge badge-teal">Complex Needs</span>
+                </div>
+            </div>
+
+            <div style="font-size:12px;color:var(--gray-400);text-align:center;margin-top:8px;">
+                All responses are anonymous. Identity revealed only after selection.
+            </div>
+        </div>
+        <div class="bottom-action">
+            <button class="btn btn-primary" id="selectBtn" onclick="confirmSelection()" disabled style="opacity:0.5;">Select a home above</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: Connection revealed -->
+    <div class="screen" id="screen5">
+        <div class="narrator">
+            <span class="narrator-icon">📖</span>
+            <span class="narrator-text"><strong>Sarah selects Home A.</strong> Identity is revealed to both sides. Thistle Hill Hall sees the commissioner details. Delphi takes over to guide the admission.</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step current"></div>
+            <div class="progress-step"></div>
+        </div>
+        <div class="section">
+            <div class="reveal">
+                <div class="reveal-icon">🎉</div>
+                <div class="reveal-title">Bed secured. Patient placed.</div>
+                <div class="reveal-sub">Request #4826 · Placed in 2.1 hours</div>
+            </div>
+
+            <div class="card" style="text-align:center;border-color:var(--teal);">
+                <div style="font-size:12px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Identity Revealed</div>
+                <div style="font-size:18px;font-weight:700;">Thistle Hill Hall</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:2px;">CQC Outstanding · Croydon · 4.2mi</div>
+                <div style="font-size:13px;color:var(--gray-500);">📧 admissions@thistlehillhall.co.uk</div>
+                <div style="font-size:13px;color:var(--gray-500);">📱 020 8401 2847</div>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-200);font-size:12px;color:var(--gray-400);">
+                    £870/wk · En-suite · Available today
+                </div>
+            </div>
+
+            <!-- Delphi Concierge -->
+            <div class="delphi-box">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                    <span style="font-size:18px;">🤖</span>
+                    <span style="font-weight:700;font-size:14px;">Delphi Placement Assistant</span>
+                    <span style="background:rgba(94,234,212,0.2);color:#5eead4;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">AI-GUIDED</span>
+                </div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:12px;">
+                    I'm now guiding both sides through to admission. All patient data flows directly between commissioner and care home — SwiftPlace never sees identifiable information.
+                </div>
+                <div class="delphi-step active">
+                    <span style="color:#5eead4;font-weight:700;">1</span>
+                    <span>📋 Collecting clinical docs from commissioner</span>
+                    <span style="margin-left:auto;background:#5eead4;color:#0f172a;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;">NOW</span>
+                </div>
+                <div class="delphi-step pending">
+                    <span style="font-weight:700;">2</span>
+                    <span>📞 Scheduling assessment call</span>
+                </div>
+                <div class="delphi-step pending">
+                    <span style="font-weight:700;">3</span>
+                    <span>🏥 Pre-admission checklist</span>
+                </div>
+                <div class="delphi-step pending">
+                    <span style="font-weight:700;">4</span>
+                    <span>📝 Contract & funding confirmation</span>
+                </div>
+                <div class="delphi-step pending">
+                    <span style="font-weight:700;">5</span>
+                    <span>🚗 Admission day coordination</span>
+                </div>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px;color:rgba(255,255,255,0.5);">
+                    🔒 SwiftPlace is a marketplace only. No patient-identifiable data touches our platform. Delphi operates under the care home's data processing agreement.
+                </div>
+            </div>
+        </div>
+        <div class="bottom-action">
+            <button class="btn btn-dark" onclick="showOutcome()">📊 View Outcome Summary →</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: Outcome / Summary -->
+    <div class="screen" id="screen6">
+        <div class="narrator">
+            <span class="narrator-icon">📖</span>
+            <span class="narrator-text"><strong>Result:</strong> Patient placed in 2.1 hours. Commissioner saved 6+ hours. Care home filled an empty bed worth £45,240/year. Delphi is handling the admin.</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+            <div class="progress-step done"></div>
+        </div>
+        <div class="section">
+            <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Placement #4826 — Outcome</div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:var(--teal);">2.1h</div>
+                    <div style="font-size:11px;color:var(--gray-500);">Time to place</div>
+                </div>
+                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:var(--teal);">3</div>
+                    <div style="font-size:11px;color:var(--gray-500);">Competing bids</div>
+                </div>
+                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:var(--teal);">£870</div>
+                    <div style="font-size:11px;color:var(--gray-500);">Winning bid/wk</div>
+                </div>
+                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:var(--teal);">£45.2K</div>
+                    <div style="font-size:11px;color:var(--gray-500);">Annual revenue</div>
+                </div>
+            </div>
+
+            <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Who won:</div>
+
+            <div class="card">
+                <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px;">👤 Commissioner (Sarah)</div>
+                <div style="font-size:12px;color:var(--gray-600);">
+                    → Placed patient in 2.1 hours (usually 4-8 hours)<br>
+                    → Compared 3 bids transparently<br>
+                    → Saved £30/week vs budget (£900 budget → £870 winning bid)<br>
+                    → Full audit trail for reporting<br>
+                    → Delphi handling admin → back to next patient
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">🏠 Thistle Hill Hall</div>
+                <div style="font-size:12px;color:var(--gray-600);">
+                    → Empty bed filled same day<br>
+                    → £45,240/year in new revenue<br>
+                    → Success fee: £1,131 (2.5% of annual value) — after 30 days<br>
+                    → Net gain: £44,109/year<br>
+                    → Delphi collecting clinical docs — no admin burden
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:8px;">⚡ SwiftPlace</div>
+                <div style="font-size:12px;color:var(--gray-600);">
+                    → Revenue: £1,131 success fee (after 30-day confirmation)<br>
+                    → Data: Placement pricing, response time, demand pattern captured<br>
+                    → Network: Both sides likely to return for next placement<br>
+                    → Zero patient data touched — GDPR clean
+                </div>
+            </div>
+
+            <div style="background:rgba(13,148,136,0.05);border:2px solid var(--teal);border-radius:12px;padding:16px;text-align:center;margin-top:16px;">
+                <div style="font-size:16px;font-weight:800;color:var(--teal-dark);">Everyone won. Nobody lost.</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">That's the SwiftPlace model.</div>
+            </div>
+        </div>
+        <div class="bottom-action">
+            <button class="btn btn-primary" onclick="restart()">🔄 Run Demo Again</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedHome = null;
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function postRequest() {
+        showScreen('screen2');
+        document.getElementById('viewLabel').textContent = '👤 Commissioner';
+    }
+
+    function showCareHomeNotifications() {
+        showScreen('screen3');
+        document.getElementById('viewLabel').textContent = '🏠 Thistle Hill Hall';
+    }
+
+    function submitBid1() {
+        showScreen('screen4');
+        document.getElementById('viewLabel').textContent = '👤 Commissioner';
+    }
+
+    function selectBid(card, home) {
+        document.querySelectorAll('.response-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedHome = home;
+        const btn = document.getElementById('selectBtn');
+        const names = { A: 'Thistle Hill Hall', B: 'Roefield Specialist Care', C: 'Thistle Manor' };
+        btn.textContent = '✅ Select Home ' + home + ' — Confirm';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+
+    function confirmSelection() {
+        if (!selectedHome) return;
+        showScreen('screen5');
+        document.getElementById('viewLabel').textContent = '🔗 Connected';
+    }
+
+    function showOutcome() {
+        showScreen('screen6');
+        document.getElementById('viewLabel').textContent = '📊 Outcome';
+    }
+
+    function restart() {
+        selectedHome = null;
+        document.querySelectorAll('.response-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('selectBtn').textContent = 'Select a home above';
+        document.getElementById('selectBtn').disabled = true;
+        document.getElementById('selectBtn').style.opacity = '0.5';
+        showScreen('screen1');
+        document.getElementById('viewLabel').textContent = '👤 Commissioner';
+    }
+</script>
+
+</body>
+</html>
