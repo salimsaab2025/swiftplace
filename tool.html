@@ -504,7 +504,7 @@
                     <div style="font-size:12px;color:var(--g600);">⭐⭐⭐ Good · 0.8mi</div>
                     <div style="font-size:13px;color:var(--orange);margin-top:4px;">⏳ No response yet · Sent 2h ago</div>
                 </div>
-                <button class="btn btn-o btn-sm" onclick="alert('Nudge sent to Albany Lodge')">Nudge</button>
+                <button class="btn btn-o btn-sm" onclick="showToast('📩 Nudge sent to Albany Lodge')">Nudge</button>
             </div>
 
             <div class="divider"></div>
@@ -563,7 +563,7 @@
             <span class="ico">🔍</span>
             <span>Search</span>
         </div>
-        <div class="nav-i" onclick="alert('Settings: notification preferences, team members, export data')">
+        <div class="nav-i" onclick="showToast('⚙️ Settings coming soon')">
             <span class="ico">⚙️</span>
             <span>Settings</span>
         </div>
@@ -643,18 +643,18 @@ function toggleBlastRecord() {
 }
 
 function caseCreated() {
-    alert('✅ Case created: Mr A, 82\n\nNow select which care homes to contact.');
+    showToast('✅ Case created — now select homes to contact');
     go('scrBlast');
 }
 
 function blastSent() {
     const count = document.querySelectorAll('#scrBlast .chk.sel').length;
-    alert(`✅ Sent to ${count} care homes!\n\nYour voice note has been delivered via WhatsApp.\nYou'll see responses in the Responses tab as they come in.`);
+    showToast(`✅ Sent to ${count} care homes via WhatsApp`, 3000);
     go('scrResponses');
 }
 
 function selectHome(name) {
-    alert(`✅ ${name} selected!\n\nTheir full contact details:\n📱 Tap to call\n💬 Tap to WhatsApp\n\nDelphi will help coordinate the admission process.`);
+    showToast(`✅ ${name} selected — contact details revealed`, 3000);
 }
 
 function addContact() {
@@ -662,7 +662,23 @@ function addContact() {
 }
 
 function addFromSearch(name) {
-    alert(`✅ ${name} added to My Homes!\n\nYou can now include them in placement blasts.`);
+    showToast('✅ ' + name + ' added to My Homes');
+}
+
+// Toast notification (replaces all alerts)
+function showToast(msg, duration) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);max-width:380px;width:90%;background:var(--navy);color:white;padding:14px 18px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.2);text-align:center;transition:opacity 0.3s;line-height:1.4;';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.display = 'block';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.style.display = 'none', 300); }, duration || 2500);
 }
 
 // Search engine
@@ -680,7 +696,7 @@ function loadHomesData() {
             const s2 = document.createElement('script');
             s2.src = 'homes-all.js';
             s2.onload = () => { homesData = HOMES; resolve(); };
-            s2.onerror = () => { alert('Could not load care home data'); resolve(); };
+            s2.onerror = () => { showToast('Could not load care home data'); resolve(); };
             document.head.appendChild(s2);
         };
         document.head.appendChild(script);
@@ -695,7 +711,7 @@ function distMi(lat1,lng1,lat2,lng2) {
 
 async function doSearch() {
     const pc = document.getElementById('searchPostcode').value.trim();
-    if (!pc) { alert('Enter a postcode'); return; }
+    if (!pc) { showToast('Enter a postcode to search'); return; }
     
     document.getElementById('searchLoading').style.display = 'block';
     document.getElementById('searchResults').innerHTML = '';
