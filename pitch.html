@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftPlace — Pitch Deck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f172a;
+            --teal: #0d9488;
+            --teal-light: #5eead4;
+            --teal-dark: #0f766e;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --white: #ffffff;
+            --red: #dc2626;
+            --green: #16a34a;
+            --blue: #2563eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--gray-100);
+            color: var(--navy);
+        }
+
+        .deck {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 60px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid var(--gray-200);
+            min-height: 540px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-dark {
+            background: var(--navy);
+            color: white;
+        }
+
+        .slide-teal {
+            background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+            color: white;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 24px;
+            font-size: 12px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        .slide-dark .slide-number { color: rgba(255,255,255,0.3); }
+        .slide-teal .slide-number { color: rgba(255,255,255,0.4); }
+
+        h1 { font-size: 48px; font-weight: 900; line-height: 1.1; }
+        h2 { font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 24px; }
+        h3 { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+
+        .subtitle { font-size: 20px; font-weight: 500; margin-top: 12px; }
+        .slide-dark .subtitle { color: var(--teal-light); }
+
+        .big-stat {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--teal);
+            line-height: 1;
+        }
+        .slide-dark .big-stat { color: var(--teal-light); }
+
+        .stat-label {
+            font-size: 18px;
+            color: var(--gray-500);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .slide-dark .stat-label { color: var(--gray-400); }
+
+        .stat-row {
+            display: flex;
+            gap: 40px;
+            margin: 32px 0;
+        }
+
+        .stat-item { flex: 1; }
+
+        .step-flow {
+            display: flex;
+            gap: 24px;
+            margin: 32px 0;
+            align-items: stretch;
+        }
+
+        .step {
+            flex: 1;
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid var(--gray-200);
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            margin: 0 auto 12px;
+        }
+
+        .step h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .step p { font-size: 13px; color: var(--gray-600); }
+
+        .arrow { display: flex; align-items: center; color: var(--teal); font-size: 24px; font-weight: 700; }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 24px 0;
+            font-size: 14px;
+        }
+
+        .compare-table th {
+            background: var(--navy);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .compare-table th:first-child { border-radius: 8px 0 0 0; }
+        .compare-table th:last-child { border-radius: 0 8px 0 0; }
+
+        .compare-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .compare-table tr:nth-child(even) { background: var(--gray-50); }
+        .compare-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        .compare-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+        .highlight-box {
+            background: rgba(13,148,136,0.05);
+            border: 2px solid var(--teal);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .slide-dark .highlight-box {
+            background: rgba(94,234,212,0.1);
+            border-color: var(--teal-light);
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+            font-size: 16px;
+            color: var(--gray-700);
+        }
+
+        .bullet-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        .slide-dark .bullet-list li { color: rgba(255,255,255,0.85); }
+        .slide-dark .bullet-list li::before { color: var(--teal-light); }
+
+        .logo-mark {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--navy);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--teal);
+        }
+
+        .slide-dark .logo-icon { background: rgba(255,255,255,0.1); }
+
+        .logo-text { font-size: 24px; font-weight: 800; }
+
+        .pos-map {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            background: var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 24px 0;
+            height: 280px;
+        }
+
+        .pos-quad {
+            background: var(--white);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .pos-quad.active {
+            background: rgba(13,148,136,0.08);
+        }
+
+        .pos-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-400);
+        }
+
+        .tag-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-teal { background: rgba(13,148,136,0.1); color: var(--teal-dark); }
+        .tag-red { background: rgba(220,38,38,0.1); color: var(--red); }
+        .tag-blue { background: rgba(37,99,235,0.1); color: var(--blue); }
+
+        @media (max-width: 768px) {
+            .slide { padding: 32px 24px; min-height: auto; }
+            h1 { font-size: 32px; }
+            h2 { font-size: 24px; }
+            .big-stat { font-size: 48px; }
+            .stat-row { flex-direction: column; gap: 20px; }
+            .step-flow { flex-direction: column; }
+            .arrow { transform: rotate(90deg); justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="deck">
+
+    <!-- SLIDE 1: Cover -->
+    <div class="slide slide-dark" style="text-align:center;">
+        <div>
+            <div style="margin-bottom:24px;">
+                <svg width="80" height="80" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;">
+                    <rect width="200" height="200" rx="36" fill="rgba(255,255,255,0.08)"/>
+                    <text x="108" y="135" text-anchor="middle" font-family="Inter, Arial" font-weight="800" font-size="120" fill="#0d9488">S</text>
+                    <rect x="22" y="72" width="32" height="5" rx="2.5" fill="#5eead4" opacity="0.8"/>
+                    <rect x="16" y="92" width="40" height="5" rx="2.5" fill="#5eead4" opacity="0.6"/>
+                    <rect x="26" y="112" width="28" height="5" rx="2.5" fill="#5eead4" opacity="0.4"/>
+                </svg>
+            </div>
+            <h1>SwiftPlace</h1>
+            <div class="subtitle">The right bed, found fast.</div>
+            <div style="margin-top:32px;font-size:14px;color:rgba(255,255,255,0.4);">Care Home Placement Platform · March 2026</div>
+        </div>
+        <div class="slide-number">1</div>
+    </div>
+
+    <!-- SLIDE 2: The Problem -->
+    <div class="slide">
+        <h2>The placement system is broken for everyone.</h2>
+        <div class="stat-row">
+            <div class="stat-item">
+                <div class="big-stat">4–8hrs</div>
+                <div class="stat-label">Time per placement (phone calls, spreadsheets)</div>
+            </div>
+            <div class="stat-item">
+                <div class="big-stat">£150</div>
+                <div class="stat-label">Lost per day per empty bed</div>
+            </div>
+            <div class="stat-item">
+                <div class="big-stat">13,200</div>
+                <div class="stat-label">Patients in NHS beds who don't need to be there — daily</div>
+            </div>
+        </div>
+        <div style="margin-top:24px;">
+            <ul class="bullet-list">
+                <li>Commissioners ring 20+ homes per placement. Most don't answer.</li>
+                <li>Care homes spend £500–2,000/month on marketing with no clear ROI.</li>
+                <li>Placement decisions based on "who you know" — not quality or price.</li>
+                <li>No audit trail. No price transparency. No real-time availability.</li>
+            </ul>
+        </div>
+        <div class="slide-number">2</div>
+    </div>
+
+    <!-- SLIDE 3: The Solution -->
+    <div class="slide">
+        <h2>Post. Match. Place.</h2>
+        <div class="subtitle" style="color:var(--gray-500);margin-bottom:32px;">Commissioners post what they need. Care homes compete to win.</div>
+
+        <div class="step-flow">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Commissioner Posts</h4>
+                <p>60 seconds. Care type, budget, location, urgency. All anonymous.</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Homes Compete</h4>
+                <p>Matching homes get instant alerts. Respond with price and availability in 30 seconds.</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Bed Secured</h4>
+                <p>Commissioner compares bids, selects the best. Identity revealed. Patient placed.</p>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="text-align:center;">
+            <strong>Average placement time: &lt;2 hours</strong> (vs 3–5 days today)
+        </div>
+        <div class="slide-number">3</div>
+    </div>
+
+    <!-- SLIDE 4: Why Anonymisation -->
+    <div class="slide slide-dark">
+        <h2>Anonymous until match.<br>That's the model.</h2>
+        <div style="margin:24px 0;">
+            <ul class="bullet-list">
+                <li>Commissioners can't bypass — they don't know who responded</li>
+                <li>Care homes can't contact commissioners directly — identity hidden</li>
+                <li>Competition on merit: price, quality, availability — not relationships</li>
+                <li>Platform creates the matching moment. That's the value. That justifies the fee.</li>
+            </ul>
+        </div>
+        <div class="highlight-box">
+            <div style="font-size:14px;font-weight:600;color:var(--teal-light);">Proven model</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:6px;">Upwork, Bark.com, Priceline — all use anonymised matching to prevent bypass. SwiftPlace applies the same mechanism to care placements.</div>
+        </div>
+        <div class="slide-number">4</div>
+    </div>
+
+    <!-- SLIDE 5: Both Sides Win -->
+    <div class="slide">
+        <h2>Both sides win.</h2>
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Commissioners</th>
+                    <th>Care Homes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Time</strong></td>
+                    <td>Place patients in hours, not days</td>
+                    <td>Fill empty beds in hours, not weeks</td>
+                </tr>
+                <tr>
+                    <td><strong>Cost</strong></td>
+                    <td>Always free. Forever.</td>
+                    <td>Pay only on confirmed 30+ day placements</td>
+                </tr>
+                <tr>
+                    <td><strong>Transparency</strong></td>
+                    <td>Compare prices, CQC ratings, availability</td>
+                    <td>See real demand: care types, budgets, urgency</td>
+                </tr>
+                <tr>
+                    <td><strong>Quality</strong></td>
+                    <td>CQC-verified homes, outcome tracking</td>
+                    <td>Compete on quality, not just relationships</td>
+                </tr>
+                <tr>
+                    <td><strong>Data</strong></td>
+                    <td>Audit trail for every placement decision</td>
+                    <td>Market intelligence: pricing, demand, trends</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="slide-number">5</div>
+    </div>
+
+    <!-- SLIDE 6: Revenue Model -->
+    <div class="slide">
+        <h2>Revenue model: success fees only.</h2>
+        <div class="stat-row">
+            <div class="stat-item">
+                <div class="big-stat">2.5%</div>
+                <div class="stat-label">Of annual placement value (or £200 minimum)</div>
+            </div>
+            <div class="stat-item">
+                <div class="big-stat">£0</div>
+                <div class="stat-label">For commissioners. Always.</div>
+            </div>
+        </div>
+        <table class="compare-table" style="margin-top:24px;">
+            <thead>
+                <tr>
+                    <th>Placement Type</th>
+                    <th>Weekly Rate</th>
+                    <th>Annual Value</th>
+                    <th>Success Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Residential</td>
+                    <td>£650/wk</td>
+                    <td>£33,800</td>
+                    <td><strong>£845</strong></td>
+                </tr>
+                <tr>
+                    <td>Nursing</td>
+                    <td>£900/wk</td>
+                    <td>£46,800</td>
+                    <td><strong>£1,170</strong></td>
+                </tr>
+                <tr>
+                    <td>Specialist Dementia</td>
+                    <td>£1,200/wk</td>
+                    <td>£62,400</td>
+                    <td><strong>£1,560</strong></td>
+                </tr>
+                <tr>
+                    <td>Respite (4 weeks)</td>
+                    <td>£650/wk</td>
+                    <td>£2,600</td>
+                    <td><strong>£200</strong> (floor)</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="highlight-box" style="text-align:center;">
+            Care homes keep <strong>97.5%</strong> of the revenue SwiftPlace generates for them.
+        </div>
+        <div class="slide-number">6</div>
+    </div>
+
+    <!-- SLIDE 7: Market Size -->
+    <div class="slide slide-dark">
+        <h2>Massive market. Zero digital infrastructure.</h2>
+        <div class="stat-row">
+            <div class="stat-item">
+                <div class="big-stat">14,800</div>
+                <div class="stat-label">Care homes in England (CQC registered)</div>
+            </div>
+            <div class="stat-item">
+                <div class="big-stat">65,000</div>
+                <div class="stat-label">Annual placements (LA + CHC combined)</div>
+            </div>
+        </div>
+        <div class="stat-row">
+            <div class="stat-item">
+                <div class="big-stat">£150–300M</div>
+                <div class="stat-label">Annual addressable waste (delays, wrong placements, implant waste)</div>
+            </div>
+            <div class="stat-item">
+                <div class="big-stat">0</div>
+                <div class="stat-label">Demand-push placement platforms. We're first.</div>
+            </div>
+        </div>
+        <div class="slide-number">7</div>
+    </div>
+
+    <!-- SLIDE 8: Competitive Position -->
+    <div class="slide">
+        <h2>Different category. Not a better Lottie.</h2>
+        <div class="pos-map">
+            <div class="pos-quad active" style="border-right:2px solid var(--gray-200);border-bottom:2px solid var(--gray-200);">
+                <div class="pos-label">Fast + Demand-Side</div>
+                <div style="margin-top:8px;font-size:20px;font-weight:800;color:var(--teal);">★ SwiftPlace</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">Nobody else is here.</div>
+            </div>
+            <div class="pos-quad" style="border-bottom:2px solid var(--gray-200);">
+                <div class="pos-label">Fast + Supply-Side</div>
+                <div style="margin-top:8px;font-size:13px;color:var(--gray-400);">Empty quadrant</div>
+            </div>
+            <div class="pos-quad" style="border-right:2px solid var(--gray-200);">
+                <div class="pos-label">Slow + Demand-Side</div>
+                <div style="margin-top:8px;font-size:13px;color:var(--gray-500);">NHS Capacity Tracker</div>
+            </div>
+            <div class="pos-quad">
+                <div class="pos-label">Slow + Supply-Side</div>
+                <div style="margin-top:8px;font-size:13px;color:var(--gray-500);">Lottie · Autumna · Care Sourcer</div>
+            </div>
+        </div>
+        <ul class="bullet-list">
+            <li><strong>Lottie/Autumna:</strong> Families browse listings. Supply-side. Wrong audience.</li>
+            <li><strong>Care Sourcer:</strong> Manual brokers. Doesn't scale.</li>
+            <li><strong>SwiftPlace:</strong> Commissioners post demand. Care homes compete. Real-time.</li>
+        </ul>
+        <div class="slide-number">8</div>
+    </div>
+
+    <!-- SLIDE 9: Roadmap -->
+    <div class="slide">
+        <h2>Phased rollout. Prove, then scale.</h2>
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;">
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+                <div style="background:var(--teal);color:white;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;margin-top:2px;">M1–2</div>
+                <div>
+                    <div style="font-weight:700;">MVP + Hospital Pilot</div>
+                    <div style="font-size:14px;color:var(--gray-600);">WhatsApp + PWA posting tool. 1 hospital trust. 200 homes pre-registered. Target: 50 placements.</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+                <div style="background:var(--blue);color:white;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;margin-top:2px;">M2–3</div>
+                <div>
+                    <div style="font-weight:700;">Proof of Concept</div>
+                    <div style="font-size:14px;color:var(--gray-600);">Measure ROI. Build case studies. Video testimonials. Iterate on feedback.</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+                <div style="background:#7c3aed;color:white;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;margin-top:2px;">M4–6</div>
+                <div>
+                    <div style="font-weight:700;">Geographic Expansion</div>
+                    <div style="font-size:14px;color:var(--gray-600);">3 LAs + 2 hospitals. Revenue live. 300+ homes. Premium features beta.</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+                <div style="background:var(--red);color:white;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;margin-top:2px;">M7–12</div>
+                <div>
+                    <div style="font-weight:700;">Scale & Data Moat</div>
+                    <div style="font-size:14px;color:var(--gray-600);">15+ LAs. AI matching. Market intelligence. £1M+ ARR. Network effects.</div>
+                </div>
+            </div>
+        </div>
+        <div class="stat-row" style="margin-top:32px;">
+            <div class="stat-item" style="text-align:center;">
+                <div style="font-size:28px;font-weight:800;color:var(--teal);">£380K</div>
+                <div class="stat-label">Year 1</div>
+            </div>
+            <div class="stat-item" style="text-align:center;">
+                <div style="font-size:28px;font-weight:800;color:var(--teal);">£1.4M</div>
+                <div class="stat-label">Year 2</div>
+            </div>
+            <div class="stat-item" style="text-align:center;">
+                <div style="font-size:28px;font-weight:800;color:var(--teal);">£5.4M</div>
+                <div class="stat-label">Year 3</div>
+            </div>
+        </div>
+        <div class="slide-number">9</div>
+    </div>
+
+    <!-- SLIDE 10: The Ask -->
+    <div class="slide slide-teal" style="text-align:center;">
+        <div>
+            <h2 style="color:white;font-size:40px;">Join the pilot.</h2>
+            <div style="font-size:20px;color:rgba(255,255,255,0.85);margin-bottom:40px;">Free. No commitment. No risk.</div>
+
+            <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;">
+                <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:20px 28px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;">✅</div>
+                    <div style="font-size:14px;font-weight:600;margin-top:8px;">Try it free</div>
+                    <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Respond to matching alerts</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:20px 28px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;">💬</div>
+                    <div style="font-size:14px;font-weight:600;margin-top:8px;">Give feedback</div>
+                    <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Help us build what you need</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:20px 28px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;">🏆</div>
+                    <div style="font-size:14px;font-weight:600;margin-top:8px;">Get priority</div>
+                    <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Pilot homes always come first</div>
+                </div>
+            </div>
+
+            <div style="font-size:16px;color:rgba(255,255,255,0.6);">
+                SwiftPlace · hello@swiftplace.uk · +44 7591 799856
+            </div>
+        </div>
+        <div class="slide-number">10</div>
+    </div>
+
+</div>
+
+</body>
+</html>
