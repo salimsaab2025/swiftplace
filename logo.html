@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SwiftPlace Logo</title>
+<style>
+body { background: #f1f5f9; display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Inter', sans-serif; padding: 40px; }
+.logo-card { text-align: center; }
+.logo-card p { margin-top: 12px; font-size: 13px; color: #64748b; }
+</style>
+</head>
+<body>
+
+<!-- Option A: Icon mark (for WhatsApp profile pic / favicon) -->
+<div class="logo-card">
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#0f172a"/>
+  <text x="100" y="78" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="72" fill="#5eead4">S</text>
+  <text x="100" y="78" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="72" fill="url(#grad1)">S</text>
+  <!-- Location pin arrow -->
+  <path d="M80 110 L100 150 L120 110" fill="none" stroke="#0d9488" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="100" cy="105" r="8" fill="#0d9488"/>
+  <defs>
+    <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+  </defs>
+</svg>
+<p>Option A — Icon (WhatsApp / favicon)</p>
+</div>
+
+<!-- Option B: Full wordmark -->
+<div class="logo-card">
+<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="72" height="72" rx="16" x="4" y="4" fill="#0f172a"/>
+  <text x="40" y="48" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="38" fill="#5eead4">S</text>
+  <path d="M30 54 L40 68 L50 54" fill="none" stroke="#0d9488" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="40" cy="52" r="4" fill="#0d9488"/>
+  <text x="92" y="52" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="32" fill="#0f172a">Swift</text>
+  <text x="210" y="52" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="32" fill="#0d9488">Place</text>
+</svg>
+<p>Option B — Full wordmark</p>
+</div>
+
+<!-- Option C: Cleaner icon - abstract connection/matching -->
+<div class="logo-card">
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#0f172a"/>
+  <!-- Two connecting arcs representing matching -->
+  <path d="M60 80 Q100 50 140 80" fill="none" stroke="#5eead4" stroke-width="8" stroke-linecap="round"/>
+  <path d="M60 120 Q100 150 140 120" fill="none" stroke="#0d9488" stroke-width="8" stroke-linecap="round"/>
+  <!-- Dots at endpoints representing two sides of marketplace -->
+  <circle cx="60" cy="80" r="10" fill="#5eead4"/>
+  <circle cx="140" cy="80" r="10" fill="#5eead4"/>
+  <circle cx="60" cy="120" r="10" fill="#0d9488"/>
+  <circle cx="140" cy="120" r="10" fill="#0d9488"/>
+  <!-- Center connection point -->
+  <circle cx="100" cy="100" r="12" fill="white"/>
+  <circle cx="100" cy="100" r="6" fill="#0d9488"/>
+</svg>
+<p>Option C — Abstract matching icon</p>
+</div>
+
+<!-- Option D: Speed + place combined -->
+<div class="logo-card">
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#0f172a"/>
+  <!-- Location pin -->
+  <path d="M100 40 C72 40 52 60 52 85 C52 118 100 160 100 160 C100 160 148 118 148 85 C148 60 128 40 100 40Z" fill="none" stroke="#0d9488" stroke-width="6"/>
+  <circle cx="100" cy="85" r="18" fill="#0d9488"/>
+  <!-- Speed lines -->
+  <line x1="40" y1="90" x2="60" y2="90" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <line x1="35" y1="105" x2="55" y2="105" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <line x1="42" y1="75" x2="58" y2="75" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+  <!-- Check mark inside pin -->
+  <path d="M90 85 L97 92 L112 77" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<p>Option D — Speed + location pin</p>
+</div>
+
+<!-- Versions on white background for comparison -->
+<div style="width:100%;text-align:center;margin-top:20px;padding-top:20px;border-top:2px dashed #cbd5e1;">
+<p style="font-size:14px;font-weight:600;color:#334155;">On white background:</p>
+</div>
+
+<div class="logo-card" style="background:white;padding:24px;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#0f172a"/>
+  <path d="M100 40 C72 40 52 60 52 85 C52 118 100 160 100 160 C100 160 148 118 148 85 C148 60 128 40 100 40Z" fill="none" stroke="#0d9488" stroke-width="6"/>
+  <circle cx="100" cy="85" r="18" fill="#0d9488"/>
+  <line x1="40" y1="90" x2="60" y2="90" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <line x1="35" y1="105" x2="55" y2="105" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <line x1="42" y1="75" x2="58" y2="75" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+  <path d="M90 85 L97 92 L112 77" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<p>Option D — Best for WhatsApp profile pic</p>
+</div>
+
+</body>
+</html>
