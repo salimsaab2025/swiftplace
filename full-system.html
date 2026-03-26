@@ -1803,11 +1803,33 @@
                         </div>
 
                         <div class="form-group-posting">
+                            <label class="form-label-posting">Minimum CQC rating</label>
+                            <div class="pill-group">
+                                <button class="pill-btn" onclick="selectCQC(this, 3)">⭐⭐⭐⭐ Outstanding</button>
+                                <button class="pill-btn" onclick="selectCQC(this, 2)">⭐⭐⭐ Good</button>
+                                <button class="pill-btn" onclick="selectCQC(this, 1)">⭐⭐ Requires Improvement</button>
+                            </div>
+                            <div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Selecting "Good" also includes Outstanding homes.</div>
+                        </div>
+
+                        <div class="form-group-posting">
+                            <label class="form-label-posting">Funding type</label>
+                            <div class="pill-group">
+                                <button class="pill-btn" onclick="selectPill(this, 'funding')">LA Funded</button>
+                                <button class="pill-btn" onclick="selectPill(this, 'funding')">CHC</button>
+                                <button class="pill-btn" onclick="selectPill(this, 'funding')">Joint Package</button>
+                                <button class="pill-btn" onclick="selectPill(this, 'funding')">Self-Pay</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group-posting">
                             <label class="form-label-posting">Urgency</label>
                             <div class="pill-group">
                                 <button class="pill-btn" onclick="selectPill(this, 'urgency')">🔴 24 hours</button>
                                 <button class="pill-btn" onclick="selectPill(this, 'urgency')">🟠 3 days</button>
                                 <button class="pill-btn" onclick="selectPill(this, 'urgency')">🟡 1 week</button>
+                                <button class="pill-btn" onclick="selectPill(this, 'urgency')">🟢 2 weeks</button>
+                                <button class="pill-btn" onclick="selectPill(this, 'urgency')">⚫ Flexible</button>
                             </div>
                         </div>
 
@@ -2900,21 +2922,25 @@ SwiftPlace™ — The right bed, found fast.
 
         <!-- Bottom Navigation -->
         <nav class="bottom-nav commissioner-only">
-            <a href="#" class="nav-item" onclick="showCommissionerDashboard()">
+            <a href="#" class="nav-item" onclick="navTo('commissioner','commissionerDashboard',this)">
                 <div class="nav-icon">🏠</div>
-                <div>Dashboard</div>
+                <div>Home</div>
             </a>
-            <a href="#" class="nav-item" onclick="showNewPost()">
+            <a href="#" class="nav-item" onclick="showNewPost();setActiveNav(this)">
                 <div class="nav-icon">➕</div>
                 <div>New Post</div>
             </a>
-            <a href="#" class="nav-item active">
+            <a href="#" class="nav-item" onclick="navTo('commissioner','commissionerDashboard',this)">
                 <div class="nav-icon">📋</div>
-                <div>Requests</div>
+                <div>My Requests</div>
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" onclick="showNotifications('commissioner');setActiveNav(this)">
                 <div class="nav-icon">🔔</div>
-                <div>Alerts</div>
+                <div>Notifications</div>
+            </a>
+            <a href="#" class="nav-item" onclick="showProfile('commissioner');setActiveNav(this)">
+                <div class="nav-icon">👤</div>
+                <div>Profile</div>
             </a>
         </nav>
 
@@ -3417,6 +3443,44 @@ SwiftPlace™ — The right bed, found fast.
                 updateResponseCharCount();
             }
         });
+
+        // Nav helpers
+        function setActiveNav(el) {
+            el.closest('.bottom-nav').querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function navTo(role, tabId, el) {
+            document.querySelectorAll('#' + role + 'View .tab-content').forEach(t => { t.style.display = 'none'; });
+            const tab = document.getElementById(tabId);
+            if (tab) { tab.style.display = 'block'; tab.classList.add('active'); }
+            if (el) setActiveNav(el);
+        }
+
+        function showNotifications(role) {
+            alert('🔔 Notifications\n\n• Request #4821 — 3 new responses (2h ago)\n• Request #4819 — Radius expanded, 4 new homes notified (5h ago)\n• Request #4815 — Placement confirmed at Maple House Care ✅');
+        }
+
+        function showProfile(role) {
+            if (role === 'commissioner') {
+                alert('👤 Commissioner Profile\n\nSarah Johnson\nCroydon NHS Trust Discharge Team\n\n📊 This month:\n• 8 placements made\n• Avg placement time: 2.4 hours\n• £6,800/wk in placements\n• 94% satisfaction rate');
+            } else {
+                alert('🏠 Care Home Profile\n\nSunrise Care Home\nCQC Outstanding ⭐⭐⭐⭐\nCroydon, CR0 2QR\n\n📊 This month:\n• 5 placements won\n• 12 bids submitted\n• 42% win rate\n• Response time: 18 min avg');
+            }
+        }
+
+        // CQC cascading selection
+        function selectCQC(btn, level) {
+            const group = btn.parentElement;
+            const buttons = group.querySelectorAll('.pill-btn');
+            // Clear all
+            buttons.forEach(b => b.classList.remove('selected'));
+            // Select this one and all higher ratings
+            buttons.forEach(b => {
+                const btnLevel = b.textContent.includes('Outstanding') ? 3 : b.textContent.includes('Good') ? 2 : 1;
+                if (btnLevel >= level) b.classList.add('selected');
+            });
+        }
 
         // Service user toggle (Adult / Children's)
         function switchServiceUser(btn, type) {
