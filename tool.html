@@ -522,92 +522,25 @@
             <div class="sec-sub">15,549 CQC-registered homes · Real names, real numbers</div>
 
             <div class="search-bar">
-                <input placeholder="Postcode or area name" value="CR7 7YE">
-                <button class="btn btn-p btn-sm">Search</button>
+                <input placeholder="Enter postcode (e.g. NG19 7AA)" id="searchPostcode">
+                <button class="btn btn-p btn-sm" onclick="doSearch()">Search</button>
             </div>
 
             <div class="filter-row">
-                <button class="filter-btn sel" onclick="this.classList.toggle('sel')">Within 10mi</button>
-                <button class="filter-btn sel" onclick="this.classList.toggle('sel')">Nursing</button>
-                <button class="filter-btn sel" onclick="this.classList.toggle('sel')">Dementia</button>
-                <button class="filter-btn" onclick="this.classList.toggle('sel')">Outstanding only</button>
-                <button class="filter-btn" onclick="this.classList.toggle('sel')">PEG feed</button>
+                <button class="filter-btn sel" id="fRadius" onclick="this.classList.toggle('sel');doSearch()">Within 10mi</button>
+                <button class="filter-btn" id="fNursing" onclick="this.classList.toggle('sel');doSearch()">Nursing</button>
+                <button class="filter-btn" id="fDementia" onclick="this.classList.toggle('sel');doSearch()">Dementia</button>
+                <button class="filter-btn" id="fLD" onclick="this.classList.toggle('sel');doSearch()">Learning Disability</button>
+                <button class="filter-btn" id="fMH" onclick="this.classList.toggle('sel');doSearch()">Mental Health</button>
             </div>
 
-            <div style="font-size:12px;color:var(--g500);margin-bottom:12px;">362 homes found · Sorted by distance</div>
+            <div style="font-size:12px;color:var(--g500);margin-bottom:12px;" id="searchStatus">Enter a postcode to search 15,549 care homes</div>
 
-            <!-- Search results -->
-            <div class="card" onclick="addFromSearch('Chestnut Lodge')">
-                <div class="card-top">
-                    <div>
-                        <div class="card-title">Chestnut Lodge</div>
-                        <div class="card-sub">32 Elmwood Road, Croydon CR0 2SG</div>
-                    </div>
-                    <span style="font-size:12px;font-weight:700;color:var(--teal);">0.3mi</span>
-                </div>
-                <div style="font-size:12px;color:var(--g600);">📱 020 3924 0970 · 🌐 bramleyhealth.co.uk</div>
-                <div class="card-meta">
-                    <span class="badge b-green">⭐⭐⭐⭐ Outstanding</span>
-                    <span class="badge b-teal">Nursing</span>
-                    <span class="badge b-teal">Dementia</span>
-                    <span class="badge b-teal">Mental Health</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="addFromSearch('Clarendon Nursing Home')">
-                <div class="card-top">
-                    <div>
-                        <div class="card-title">Clarendon Nursing Home</div>
-                        <div class="card-sub">7A Zion Place, Thornton Heath CR7 8RR</div>
-                    </div>
-                    <span style="font-size:12px;font-weight:700;color:var(--teal);">0.8mi</span>
-                </div>
-                <div style="font-size:12px;color:var(--g600);">📱 020 8689 1004 · 🌐 bondcare.co.uk</div>
-                <div class="card-meta">
-                    <span class="badge b-blue">⭐⭐⭐ Good</span>
-                    <span class="badge b-teal">Nursing</span>
-                    <span class="badge b-teal">Dementia</span>
-                    <span class="badge b-teal">Learning Disability</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="addFromSearch('Barrington Lodge')">
-                <div class="card-top">
-                    <div>
-                        <div class="card-title">Barrington Lodge</div>
-                        <div class="card-sub">9-15 Morland Road, Croydon CR0 6HA</div>
-                    </div>
-                    <span style="font-size:12px;font-weight:700;color:var(--teal);">1.2mi</span>
-                </div>
-                <div style="font-size:12px;color:var(--g600);">📱 020 8654 9136</div>
-                <div class="card-meta">
-                    <span class="badge b-blue">⭐⭐⭐ Good</span>
-                    <span class="badge b-teal">Nursing</span>
-                    <span class="badge b-teal">Dementia</span>
-                    <span class="badge b-teal">Physical</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="addFromSearch('St Antonys')">
-                <div class="card-top">
-                    <div>
-                        <div class="card-title">St Antony's Care Home</div>
-                        <div class="card-sub">1 Wide Way, Mitcham CR4 1BP</div>
-                    </div>
-                    <span style="font-size:12px;font-weight:700;color:var(--teal);">1.4mi</span>
-                </div>
-                <div style="font-size:12px;color:var(--g600);">📱 020 8679 0752 · 🌐 stantonyscarehome.co.uk</div>
-                <div class="card-meta">
-                    <span class="badge b-blue">⭐⭐⭐ Good</span>
-                    <span class="badge b-teal">Dementia</span>
-                    <span class="badge b-teal">Learning Disability</span>
-                    <span class="badge b-teal">Mental Health</span>
-                </div>
-            </div>
-
-            <div style="text-align:center;padding:20px;font-size:12px;color:var(--g400);">
-                Showing 4 of 362 results · Scroll for more<br>
-                <span style="color:var(--teal);font-weight:500;">Data from CQC · Updated monthly</span>
+            <div id="searchResults"></div>
+            
+            <div id="searchLoading" style="display:none;text-align:center;padding:40px;">
+                <div style="font-size:24px;margin-bottom:8px;">⏳</div>
+                <div style="font-size:13px;color:var(--g400);">Searching care homes near you...</div>
             </div>
         </div>
     </div>
@@ -731,6 +664,121 @@ function addContact() {
 function addFromSearch(name) {
     alert(`✅ ${name} added to My Homes!\n\nYou can now include them in placement blasts.`);
 }
+
+// Search engine
+let homesData = null;
+let searchOrigin = null;
+
+function loadHomesData() {
+    if (homesData) return Promise.resolve();
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = '/swiftplace/homes-all.js';
+        script.onload = () => { homesData = HOMES; resolve(); };
+        script.onerror = () => {
+            // Fallback: try relative path
+            const s2 = document.createElement('script');
+            s2.src = 'homes-all.js';
+            s2.onload = () => { homesData = HOMES; resolve(); };
+            s2.onerror = () => { alert('Could not load care home data'); resolve(); };
+            document.head.appendChild(s2);
+        };
+        document.head.appendChild(script);
+    });
+}
+
+function distMi(lat1,lng1,lat2,lng2) {
+    const R=3959,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+async function doSearch() {
+    const pc = document.getElementById('searchPostcode').value.trim();
+    if (!pc) { alert('Enter a postcode'); return; }
+    
+    document.getElementById('searchLoading').style.display = 'block';
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('searchStatus').textContent = 'Searching...';
+    
+    // Load data if needed
+    await loadHomesData();
+    
+    // Geocode postcode
+    try {
+        const resp = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc.replace(/\s/g,'')));
+        const json = await resp.json();
+        if (json.status !== 200 || !json.result) {
+            document.getElementById('searchStatus').textContent = 'Invalid postcode. Try again.';
+            document.getElementById('searchLoading').style.display = 'none';
+            return;
+        }
+        searchOrigin = { lat: json.result.latitude, lng: json.result.longitude };
+    } catch(e) {
+        document.getElementById('searchStatus').textContent = 'Error looking up postcode. Check your connection.';
+        document.getElementById('searchLoading').style.display = 'none';
+        return;
+    }
+    
+    // Filters
+    const maxDist = document.getElementById('fRadius').classList.contains('sel') ? 10 : 50;
+    const fNursing = document.getElementById('fNursing').classList.contains('sel');
+    const fDementia = document.getElementById('fDementia').classList.contains('sel');
+    const fLD = document.getElementById('fLD').classList.contains('sel');
+    const fMH = document.getElementById('fMH').classList.contains('sel');
+    
+    // [name, postcode, lat, lng, phone, website, cats, specs, la, address, cqcUrl]
+    const results = [];
+    for (const h of homesData) {
+        const dist = distMi(searchOrigin.lat, searchOrigin.lng, h[2], h[3]);
+        if (dist > maxDist) continue;
+        
+        const cats = h[6]; // nursing,residential
+        const specs = h[7]; // dementia,learningDisability,mentalHealth...
+        
+        if (fNursing && !cats.includes('nursing')) continue;
+        if (fDementia && !specs.includes('dementia')) continue;
+        if (fLD && !specs.includes('learningDisability')) continue;
+        if (fMH && !specs.includes('mentalHealth')) continue;
+        
+        results.push({ name:h[0], postcode:h[1], dist:Math.round(dist*10)/10, phone:h[4], website:h[5], cats:h[6], specs:h[7], la:h[8], address:h[9], cqcUrl:h[10] });
+    }
+    
+    results.sort((a,b) => a.dist - b.dist);
+    
+    document.getElementById('searchLoading').style.display = 'none';
+    document.getElementById('searchStatus').textContent = results.length + ' homes found · Sorted by distance';
+    
+    // Render top 20
+    const container = document.getElementById('searchResults');
+    const specLabels = {dementia:'Dementia',learningDisability:'Learning Disability',mentalHealth:'Mental Health',physicalDisability:'Physical',sensoryImpairment:'Sensory',endOfLife:'End of Life',over65:'65+',under65:'<65'};
+    
+    results.slice(0, 20).forEach(h => {
+        const specBadges = h.specs.split(',').filter(Boolean).map(s => '<span class="badge b-teal">' + (specLabels[s]||s) + '</span>').join('');
+        const catBadge = h.cats.includes('nursing') ? '<span class="badge b-blue">Nursing</span>' : '<span class="badge b-gray">Residential</span>';
+        const website = h.website ? ' · 🌐 ' + h.website.replace('https://','').replace('http://','').split('/')[0] : '';
+        
+        container.innerHTML += '<div class="card" onclick="addFromSearch(\'' + h.name.replace(/'/g,"\\'") + '\')">' +
+            '<div class="card-top"><div>' +
+            '<div class="card-title">' + h.name + '</div>' +
+            '<div class="card-sub">' + h.address + ', ' + h.postcode + '</div></div>' +
+            '<span style="font-size:12px;font-weight:700;color:var(--teal);">' + h.dist + 'mi</span></div>' +
+            '<div style="font-size:12px;color:var(--g600);">📱 ' + h.phone + website + '</div>' +
+            '<div class="card-meta">' + catBadge + specBadges + '</div></div>';
+    });
+    
+    if (results.length > 20) {
+        container.innerHTML += '<div style="text-align:center;padding:16px;font-size:12px;color:var(--g400);">Showing 20 of ' + results.length + ' · Scroll for more</div>';
+    }
+    if (results.length === 0) {
+        container.innerHTML = '<div class="empty"><div class="ico">🔍</div><div>No homes found. Try a wider search or different filters.</div></div>';
+    }
+}
+
+// Allow Enter key in search
+document.getElementById('searchPostcode').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doSearch();
+});
 </script>
 
 </body>
