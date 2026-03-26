@@ -1483,10 +1483,10 @@
                         </div>
 
                         <div class="comparison-controls">
-                            <button class="btn btn-outline btn-small sort-btn active" onclick="sortResponses('price')">Price</button>
-                            <button class="btn btn-outline btn-small sort-btn" onclick="sortResponses('quality')">Quality</button>
-                            <button class="btn btn-outline btn-small sort-btn" onclick="sortResponses('availability')">Availability</button>
-                            <button class="btn btn-outline btn-small sort-btn" onclick="sortResponses('distance')">Distance</button>
+                            <button class="btn btn-outline btn-small sort-btn active" onclick="sortResponses('best')">⭐ Best Match</button>
+                            <button class="btn btn-outline btn-small sort-btn" onclick="sortResponses('price')">💰 Price</button>
+                            <button class="btn btn-outline btn-small sort-btn" onclick="sortResponses('quality')">🏆 Rating</button>
+                            <button class="btn btn-outline btn-small sort-btn" onclick="sortResponses('distance')">📍 Distance</button>
                         </div>
 
                         <div class="response-card featured">
@@ -3291,8 +3291,33 @@ SwiftPlace™ — The right bed, found fast.
             document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            // In a real app, this would sort the response cards
-            console.log(`Sorting by: ${criteria}`);
+            // Sort the response cards
+            const container = document.querySelector('#responseComparison .item-list');
+            if (!container) return;
+            const cards = Array.from(container.querySelectorAll('.list-item'));
+            
+            // Data for each card (A=Outstanding £820 2.1mi, B=Good £880 4.3mi, C=Good £850 3.8mi)
+            const data = {
+                0: { price: 820, quality: 4, distance: 2.1, best: 95 },  // Outstanding, cheapest, closest
+                1: { price: 880, quality: 3, distance: 4.3, best: 75 },  // Good, mid
+                2: { price: 850, quality: 3, distance: 3.8, best: 80 },  // Good, mid price, closer
+            };
+            
+            const sorted = cards.map((card, i) => ({ card, i, ...data[i] }));
+            
+            switch (criteria) {
+                case 'price': sorted.sort((a, b) => a.price - b.price); break;
+                case 'quality': sorted.sort((a, b) => b.quality - a.quality); break;
+                case 'distance': sorted.sort((a, b) => a.distance - b.distance); break;
+                case 'best': sorted.sort((a, b) => b.best - a.best); break;
+            }
+            
+            sorted.forEach(s => container.appendChild(s.card));
+            
+            // Visual feedback
+            const label = { best: '⭐ Sorted by best match', price: '💰 Sorted by lowest price', quality: '🏆 Sorted by highest rating', distance: '📍 Sorted by nearest' };
+            const notice = document.getElementById('sortNotice');
+            if (notice) notice.textContent = label[criteria] || '';
         }
 
         // Posting form functions
