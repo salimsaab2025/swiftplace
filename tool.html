@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftPlace — The right bed, found fast</title>
+    <link rel="manifest" href="/swiftplace/manifest.json">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SwiftPlace">
+    <link rel="apple-touch-icon" href="/swiftplace/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--navy:#0f172a;--teal:#0d9488;--teal-light:#5eead4;--teal-dark:#0f766e;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;--g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;--white:#fff;--red:#dc2626;--green:#16a34a;--blue:#2563eb;--orange:#ea580c;--purple:#7c3aed;}
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--g50);color:var(--navy);line-height:1.5;}
+        .app{max-width:430px;margin:0 auto;background:var(--white);min-height:100vh;display:flex;flex-direction:column;position:relative;}
+
+        /* Header */
+        .hdr{background:var(--white);padding:12px 16px;border-bottom:1px solid var(--g200);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+        .logo{display:flex;align-items:center;gap:8px;}
+        .logo-i{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:800;font-size:18px;}
+        .logo-t{font-weight:700;font-size:15px;}
+        .logo-s{font-size:9px;color:var(--teal);font-weight:500;}
+        .hdr-badge{font-size:11px;color:var(--g400);font-weight:500;}
+
+        /* Screens */
+        .scr{display:none;flex:1;overflow-y:auto;padding-bottom:70px;}
+        .scr.active{display:block;}
+        .sec{padding:16px;}
+        .sec-title{font-size:18px;font-weight:700;margin-bottom:4px;}
+        .sec-sub{font-size:13px;color:var(--g500);margin-bottom:16px;}
+
+        /* Cards */
+        .card{background:var(--white);border:1px solid var(--g200);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,0.04);cursor:pointer;transition:all 0.15s;}
+        .card:active{transform:scale(0.98);}
+        .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+        .card-title{font-size:14px;font-weight:700;}
+        .card-sub{font-size:12px;color:var(--g500);margin-top:2px;}
+        .card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+
+        /* Badges */
+        .badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+        .b-red{background:#fef2f2;color:var(--red);}
+        .b-green{background:#dcfce7;color:var(--green);}
+        .b-blue{background:#dbeafe;color:var(--blue);}
+        .b-teal{background:#f0fdfa;color:var(--teal-dark);}
+        .b-orange{background:#fff7ed;color:var(--orange);}
+        .b-purple{background:#ede9fe;color:var(--purple);}
+        .b-gray{background:var(--g100);color:var(--g600);}
+
+        /* Status dots */
+        .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+        .dot-red{background:var(--red);}
+        .dot-green{background:var(--green);}
+        .dot-orange{background:var(--orange);}
+
+        /* Buttons */
+        .btn{padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;width:100%;transition:all 0.15s;}
+        .btn-p{background:var(--teal);color:white;}
+        .btn-d{background:var(--navy);color:white;}
+        .btn-o{background:white;color:var(--navy);border:1px solid var(--g300);}
+        .btn-sm{padding:8px 14px;font-size:12px;width:auto;}
+        .btn-g{background:var(--green);color:white;}
+
+        /* Bottom Nav */
+        .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--white);border-top:1px solid var(--g200);display:flex;padding:6px 0;z-index:100;}
+        .nav-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer;color:var(--g400);font-size:10px;font-weight:500;transition:color 0.15s;}
+        .nav-i.active{color:var(--teal);}
+        .nav-i .ico{font-size:20px;}
+
+        /* Voice recording */
+        .voice-btn{width:64px;height:64px;border-radius:50%;background:var(--red);color:white;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 4px 12px rgba(220,38,38,0.3);transition:all 0.15s;}
+        .voice-btn:active{transform:scale(0.9);}
+        .voice-btn.recording{animation:pulse-rec 1.5s infinite;}
+        @keyframes pulse-rec{0%,100%{box-shadow:0 4px 12px rgba(220,38,38,0.3);}50%{box-shadow:0 4px 24px rgba(220,38,38,0.6);}}
+
+        /* Checkbox */
+        .chk{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--g200);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;}
+        .chk.sel{border-color:var(--teal);background:rgba(13,148,136,0.04);}
+        .chk-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--g300);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:white;transition:all 0.15s;}
+        .chk.sel .chk-box{background:var(--teal);border-color:var(--teal);}
+        .chk-info{flex:1;}
+        .chk-name{font-size:13px;font-weight:600;}
+        .chk-detail{font-size:11px;color:var(--g500);}
+
+        /* Channel selector */
+        .ch-sel{display:flex;gap:6px;margin:12px 0;}
+        .ch-btn{flex:1;padding:10px;border-radius:10px;border:2px solid var(--g200);background:white;text-align:center;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--g600);transition:all 0.15s;}
+        .ch-btn.sel{border-color:var(--teal);background:rgba(13,148,136,0.05);color:var(--teal-dark);}
+
+        /* Responses */
+        .resp{border:1px solid var(--g200);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+        .resp.yes{border-color:var(--green);background:#f0fdf4;}
+        .resp.no{border-color:var(--g200);background:var(--g50);opacity:0.7;}
+        .resp.wait{border-left:3px solid var(--orange);}
+
+        /* Search */
+        .search-bar{display:flex;gap:8px;margin-bottom:12px;}
+        .search-bar input{flex:1;padding:12px 14px;border:1px solid var(--g200);border-radius:10px;font-size:14px;font-family:inherit;}
+        .filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;}
+        .filter-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--g200);background:white;font-size:11px;font-weight:600;color:var(--g500);cursor:pointer;white-space:nowrap;font-family:inherit;}
+        .filter-btn.sel{border-color:var(--teal);background:#f0fdfa;color:var(--teal-dark);}
+
+        /* Misc */
+        .empty{text-align:center;padding:40px 20px;color:var(--g400);}
+        .empty .ico{font-size:40px;margin-bottom:8px;}
+        .divider{height:1px;background:var(--g200);margin:16px 0;}
+        .stat-row{display:flex;gap:8px;margin-bottom:16px;}
+        .stat-card{flex:1;background:var(--g50);border-radius:10px;padding:12px;text-align:center;}
+        .stat-val{font-size:22px;font-weight:800;color:var(--teal-dark);}
+        .stat-lbl{font-size:10px;color:var(--g500);}
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <!-- Header -->
+    <header class="hdr">
+        <div class="logo">
+            <div class="logo-i">S</div>
+            <div>
+                <div class="logo-t">SwiftPlace</div>
+                <div class="logo-s">The right bed, found fast.</div>
+            </div>
+        </div>
+        <div class="hdr-badge" id="hdrBadge">Sarah · Croydon NHS</div>
+    </header>
+
+    <!-- ===== SCREEN: MY CASES ===== -->
+    <div class="scr active" id="scrCases">
+        <div class="sec">
+            <div class="stat-row">
+                <div class="stat-card"><div class="stat-val">3</div><div class="stat-lbl">Active cases</div></div>
+                <div class="stat-card"><div class="stat-val">7</div><div class="stat-lbl">Homes contacted</div></div>
+                <div class="stat-card"><div class="stat-val">1.8h</div><div class="stat-lbl">Avg response</div></div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div class="sec-title">My Cases</div>
+                <button class="btn btn-p btn-sm" onclick="go('scrNewCase')">+ New Case</button>
+            </div>
+
+            <!-- Case 1: Urgent -->
+            <div class="card" onclick="go('scrBlast')">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Mr A, 82 — Dementia + Nursing</div>
+                        <div class="card-sub">PEG feed · CHC funded · £900/wk</div>
+                    </div>
+                    <span class="badge b-red">🔴 24hrs</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">📍 Croydon</span>
+                    <span class="badge b-blue">8 homes contacted</span>
+                    <span class="badge b-green">3 responded ✓</span>
+                </div>
+            </div>
+
+            <!-- Case 2: In progress -->
+            <div class="card" onclick="go('scrResponses')">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Mrs B, 76 — Residential Respite</div>
+                        <div class="card-sub">Carer break · Self-pay · £650/wk</div>
+                    </div>
+                    <span class="badge b-orange">🟠 3 days</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">📍 Bromley</span>
+                    <span class="badge b-blue">5 homes contacted</span>
+                    <span class="badge b-green">4 responded ✓</span>
+                </div>
+            </div>
+
+            <!-- Case 3: Placed -->
+            <div class="card" style="opacity:0.7;">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Mr C, 91 — End of Life</div>
+                        <div class="card-sub">Palliative · LA funded · £780/wk</div>
+                    </div>
+                    <span class="badge b-green">✅ Placed</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-gray">Placed at Maple House · 2 days ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCREEN: MY HOMES (Contacts) ===== -->
+    <div class="scr" id="scrHomes">
+        <div class="sec">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <div class="sec-title">My Care Homes</div>
+                <span class="badge b-teal">23 contacts</span>
+            </div>
+            <div class="sec-sub">Share contacts via WhatsApp to add. Auto-matched to CQC.</div>
+
+            <!-- Add contact prompt -->
+            <div style="background:linear-gradient(135deg,rgba(13,148,136,0.05),rgba(37,99,235,0.05));border:2px dashed var(--teal);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px;cursor:pointer;" onclick="addContact()">
+                <div style="font-size:24px;margin-bottom:4px;">📱</div>
+                <div style="font-size:13px;font-weight:600;color:var(--teal-dark);">Add Care Home Contact</div>
+                <div style="font-size:11px;color:var(--g500);margin-top:2px;">Share a contact from your phone via WhatsApp,<br>or tap to search the CQC directory</div>
+            </div>
+
+            <!-- Contact list -->
+            <div class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Chestnut Lodge</div>
+                        <div class="card-sub">📱 020 3924 0970 · 0.3mi</div>
+                    </div>
+                    <span class="badge b-green">⭐⭐⭐⭐ Outstanding</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Nursing</span>
+                    <span class="badge b-teal">PEG ✓</span>
+                </div>
+                <div style="font-size:11px;color:var(--g400);margin-top:6px;">Last placed: 2 weeks ago · Quoted £870/wk</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Sunrise Care Home</div>
+                        <div class="card-sub">📱 020 8401 2847 · 2.1mi</div>
+                    </div>
+                    <span class="badge b-green">⭐⭐⭐⭐ Outstanding</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Nursing</span>
+                    <span class="badge b-teal">End of Life</span>
+                </div>
+                <div style="font-size:11px;color:var(--g400);margin-top:6px;">Last placed: 1 month ago · Quoted £890/wk</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Heavers Court</div>
+                        <div class="card-sub">📱 0333 321 8262 · 1.0mi</div>
+                    </div>
+                    <span class="badge b-blue">⭐⭐⭐ Good</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Mental Health</span>
+                    <span class="badge b-teal">Physical</span>
+                </div>
+                <div style="font-size:11px;color:var(--g400);margin-top:6px;">Never placed · Added from CQC search</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Albany Lodge</div>
+                        <div class="card-sub">📱 020 8684 4994 · 0.8mi</div>
+                    </div>
+                    <span class="badge b-blue">⭐⭐⭐ Good</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">Nursing</span>
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Mental Health</span>
+                </div>
+                <div style="font-size:11px;color:var(--g400);margin-top:6px;">Last placed: 3 months ago · Quoted £850/wk</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Norbury Hall</div>
+                        <div class="card-sub">📱 020 8764 9164 · 1.3mi</div>
+                    </div>
+                    <span class="badge b-blue">⭐⭐⭐ Good</span>
+                </div>
+                <div class="card-meta">
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Learning Disability</span>
+                </div>
+                <div style="font-size:11px;color:var(--g400);margin-top:6px;">Last placed: 6 months ago</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCREEN: NEW CASE ===== -->
+    <div class="scr" id="scrNewCase">
+        <div class="sec">
+            <div class="sec-title">New Placement Case</div>
+            <div class="sec-sub">Voice note or quick form — 60 seconds.</div>
+
+            <!-- Voice note option -->
+            <div style="background:var(--g50);border-radius:12px;padding:20px;text-align:center;margin-bottom:16px;">
+                <div style="font-size:14px;font-weight:600;margin-bottom:12px;">Record a voice note</div>
+                <button class="voice-btn" id="voiceBtn" onclick="toggleRecord()">🎙️</button>
+                <div style="font-size:12px;color:var(--g400);margin-top:10px;" id="voiceStatus">Tap to record your placement need</div>
+                <div style="font-size:11px;color:var(--g400);margin-top:4px;">Include: age, care type, needs, budget, urgency, location</div>
+            </div>
+
+            <div style="text-align:center;color:var(--g400);font-size:12px;font-weight:600;margin-bottom:16px;">— or fill in the details —</div>
+
+            <!-- Quick form -->
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Patient ref & age</label>
+                    <input placeholder="e.g. Mr A, 82" style="width:100%;padding:12px;border:1px solid var(--g200);border-radius:10px;font-size:14px;font-family:inherit;">
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Care type</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">🏠 Residential</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">🏥 Nursing</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">🧠 Dementia</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">🧘 Mental Health</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">🎓 Learning Disability</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">♿ Physical</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">🕊️ End of Life</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">⏰ Respite</button>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Additional needs</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">PEG feed</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">Hoist</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">Oxygen</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">Catheter</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">Behavioural</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">Wandering</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">1:1</button>
+                        <button class="filter-btn" onclick="this.classList.toggle('sel')">Double-handed</button>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div style="flex:1;">
+                        <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Budget (£/wk)</label>
+                        <input type="number" placeholder="900" style="width:100%;padding:12px;border:1px solid var(--g200);border-radius:10px;font-size:14px;font-family:inherit;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Funding</label>
+                        <select style="width:100%;padding:12px;border:1px solid var(--g200);border-radius:10px;font-size:14px;font-family:inherit;background:white;">
+                            <option>LA Funded</option>
+                            <option>CHC</option>
+                            <option>Joint</option>
+                            <option>Self-Pay</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Urgency</label>
+                    <div style="display:flex;gap:6px;">
+                        <button class="filter-btn" onclick="selOne(this)">🔴 Same day</button>
+                        <button class="filter-btn" onclick="selOne(this)">🔴 24hrs</button>
+                        <button class="filter-btn" onclick="selOne(this)">🟠 3 days</button>
+                        <button class="filter-btn" onclick="selOne(this)">🟡 1 week</button>
+                        <button class="filter-btn" onclick="selOne(this)">🟢 Flexible</button>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Location (postcode)</label>
+                    <input placeholder="CR7 7YE" style="width:100%;padding:12px;border:1px solid var(--g200);border-radius:10px;font-size:14px;font-family:inherit;">
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;">Notes</label>
+                    <textarea placeholder="Any specific requirements..." style="width:100%;padding:12px;border:1px solid var(--g200);border-radius:10px;font-size:14px;font-family:inherit;min-height:60px;resize:vertical;"></textarea>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 16px 16px;"><button class="btn btn-p" onclick="caseCreated()">Create Case → Select Homes to Contact</button></div>
+    </div>
+
+    <!-- ===== SCREEN: BLAST ===== -->
+    <div class="scr" id="scrBlast">
+        <div class="sec">
+            <div class="sec-title">Send to Care Homes</div>
+            <div class="sec-sub">Mr A, 82 · Dementia + Nursing · PEG · £900/wk · 🔴 24hrs</div>
+
+            <!-- Select homes -->
+            <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Select homes to contact:</div>
+
+            <div class="chk sel" onclick="toggleChk(this)">
+                <div class="chk-box">✓</div>
+                <div class="chk-info">
+                    <div class="chk-name">Chestnut Lodge <span class="badge b-green" style="font-size:9px;">Outstanding</span></div>
+                    <div class="chk-detail">0.3mi · Dementia ✓ Nursing ✓ PEG ✓ · Last: £870/wk</div>
+                </div>
+            </div>
+            <div class="chk sel" onclick="toggleChk(this)">
+                <div class="chk-box">✓</div>
+                <div class="chk-info">
+                    <div class="chk-name">Sunrise Care Home <span class="badge b-green" style="font-size:9px;">Outstanding</span></div>
+                    <div class="chk-detail">2.1mi · Dementia ✓ Nursing ✓ · Last: £890/wk</div>
+                </div>
+            </div>
+            <div class="chk sel" onclick="toggleChk(this)">
+                <div class="chk-box">✓</div>
+                <div class="chk-info">
+                    <div class="chk-name">Heavers Court <span class="badge b-blue" style="font-size:9px;">Good</span></div>
+                    <div class="chk-detail">1.0mi · Dementia ✓ Nursing ✓ MH ✓</div>
+                </div>
+            </div>
+            <div class="chk sel" onclick="toggleChk(this)">
+                <div class="chk-box">✓</div>
+                <div class="chk-info">
+                    <div class="chk-name">Albany Lodge <span class="badge b-blue" style="font-size:9px;">Good</span></div>
+                    <div class="chk-detail">0.8mi · Nursing ✓ Dementia ✓ MH ✓ · Last: £850/wk</div>
+                </div>
+            </div>
+            <div class="chk" onclick="toggleChk(this)">
+                <div class="chk-box"></div>
+                <div class="chk-info">
+                    <div class="chk-name">Norbury Hall <span class="badge b-blue" style="font-size:9px;">Good</span></div>
+                    <div class="chk-detail">1.3mi · Dementia ✓ LD ✓ · No nursing</div>
+                </div>
+            </div>
+
+            <div style="text-align:right;font-size:12px;color:var(--teal);font-weight:500;margin:8px 0;cursor:pointer;" onclick="go('scrSearch')">+ Find more homes from CQC directory →</div>
+
+            <div class="divider"></div>
+
+            <!-- Channel selection -->
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;">How to contact:</div>
+            <div class="ch-sel">
+                <button class="ch-btn sel" onclick="selCh(this)">💬 WhatsApp<br>Voice Note</button>
+                <button class="ch-btn" onclick="selCh(this)">💬 WhatsApp<br>Text</button>
+                <button class="ch-btn" onclick="selCh(this)">📱 SMS</button>
+                <button class="ch-btn" onclick="selCh(this)">📧 Email</button>
+            </div>
+
+            <!-- Voice note recording -->
+            <div id="voiceSection" style="background:var(--g50);border-radius:12px;padding:16px;text-align:center;margin:12px 0;">
+                <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Record your message</div>
+                <button class="voice-btn" id="blastVoice" onclick="toggleBlastRecord()">🎙️</button>
+                <div style="font-size:11px;color:var(--g400);margin-top:8px;" id="blastVoiceStatus">One recording → sent to all 4 selected homes</div>
+            </div>
+
+            <!-- Auto-draft preview -->
+            <div id="autoDraft" style="display:none;background:var(--g50);border-radius:12px;padding:14px;margin:12px 0;">
+                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">Auto-drafted message:</div>
+                <div style="font-size:13px;color:var(--g700);line-height:1.5;">
+                    Placement enquiry from Sarah Johnson, Croydon NHS Trust:<br><br>
+                    82yr male, dementia + nursing, PEG feed required<br>
+                    CHC funded, £900/wk budget<br>
+                    Croydon area, needed within 24 hours<br><br>
+                    Do you have availability? Reply with YES/NO + weekly rate.<br><br>
+                    <span style="color:var(--g400);">Sent via SwiftPlace</span>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 16px 16px;">
+            <button class="btn btn-g" onclick="blastSent()" id="blastBtn">⚡ Send to 4 homes via WhatsApp Voice Note</button>
+        </div>
+    </div>
+
+    <!-- ===== SCREEN: RESPONSES ===== -->
+    <div class="scr" id="scrResponses">
+        <div class="sec">
+            <div class="sec-title">Responses — Mr A, 82</div>
+            <div class="sec-sub">Dementia + Nursing · PEG · £900/wk · Sent 2 hours ago</div>
+
+            <div class="stat-row">
+                <div class="stat-card"><div class="stat-val">4</div><div class="stat-lbl">Sent</div></div>
+                <div class="stat-card"><div class="stat-val" style="color:var(--green);">3</div><div class="stat-lbl">Replied</div></div>
+                <div class="stat-card"><div class="stat-val">1</div><div class="stat-lbl">Waiting</div></div>
+            </div>
+
+            <!-- Response: Yes -->
+            <div class="resp yes">
+                <div>
+                    <div style="font-size:14px;font-weight:700;">Chestnut Lodge</div>
+                    <div style="font-size:12px;color:var(--g600);">⭐⭐⭐⭐ Outstanding · 0.3mi</div>
+                    <div style="font-size:13px;color:var(--green);font-weight:600;margin-top:4px;">✅ Available today · £870/wk</div>
+                    <div style="font-size:11px;color:var(--g500);margin-top:2px;">"En-suite room, ground floor. PEG experienced team."</div>
+                </div>
+                <button class="btn btn-p btn-sm" onclick="selectHome('Chestnut Lodge')">Select</button>
+            </div>
+
+            <div class="resp yes">
+                <div>
+                    <div style="font-size:14px;font-weight:700;">Sunrise Care Home</div>
+                    <div style="font-size:12px;color:var(--g600);">⭐⭐⭐⭐ Outstanding · 2.1mi</div>
+                    <div style="font-size:13px;color:var(--green);font-weight:600;margin-top:4px;">✅ Available Thursday · £890/wk</div>
+                    <div style="font-size:11px;color:var(--g500);margin-top:2px;">"Can accommodate. Assessment call preferred first."</div>
+                </div>
+                <button class="btn btn-o btn-sm" onclick="selectHome('Sunrise Care Home')">Select</button>
+            </div>
+
+            <div class="resp no">
+                <div>
+                    <div style="font-size:14px;font-weight:700;">Heavers Court</div>
+                    <div style="font-size:12px;color:var(--g600);">⭐⭐⭐ Good · 1.0mi</div>
+                    <div style="font-size:13px;color:var(--red);margin-top:4px;">❌ No availability this week</div>
+                </div>
+            </div>
+
+            <div class="resp wait">
+                <div>
+                    <div style="font-size:14px;font-weight:700;">Albany Lodge</div>
+                    <div style="font-size:12px;color:var(--g600);">⭐⭐⭐ Good · 0.8mi</div>
+                    <div style="font-size:13px;color:var(--orange);margin-top:4px;">⏳ No response yet · Sent 2h ago</div>
+                </div>
+                <button class="btn btn-o btn-sm" onclick="alert('Nudge sent to Albany Lodge')">Nudge</button>
+            </div>
+
+            <div class="divider"></div>
+            <div style="text-align:center;">
+                <div style="font-size:12px;color:var(--g400);margin-bottom:8px;">Need more options?</div>
+                <button class="btn btn-o btn-sm" style="width:auto;display:inline-block;" onclick="go('scrSearch')">🔍 Search CQC directory for more homes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCREEN: SEARCH (CQC Directory) ===== -->
+    <div class="scr" id="scrSearch">
+        <div class="sec">
+            <div class="sec-title">Find Care Homes</div>
+            <div class="sec-sub">15,549 CQC-registered homes · Real names, real numbers</div>
+
+            <div class="search-bar">
+                <input placeholder="Postcode or area name" value="CR7 7YE">
+                <button class="btn btn-p btn-sm">Search</button>
+            </div>
+
+            <div class="filter-row">
+                <button class="filter-btn sel" onclick="this.classList.toggle('sel')">Within 10mi</button>
+                <button class="filter-btn sel" onclick="this.classList.toggle('sel')">Nursing</button>
+                <button class="filter-btn sel" onclick="this.classList.toggle('sel')">Dementia</button>
+                <button class="filter-btn" onclick="this.classList.toggle('sel')">Outstanding only</button>
+                <button class="filter-btn" onclick="this.classList.toggle('sel')">PEG feed</button>
+            </div>
+
+            <div style="font-size:12px;color:var(--g500);margin-bottom:12px;">362 homes found · Sorted by distance</div>
+
+            <!-- Search results -->
+            <div class="card" onclick="addFromSearch('Chestnut Lodge')">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Chestnut Lodge</div>
+                        <div class="card-sub">32 Elmwood Road, Croydon CR0 2SG</div>
+                    </div>
+                    <span style="font-size:12px;font-weight:700;color:var(--teal);">0.3mi</span>
+                </div>
+                <div style="font-size:12px;color:var(--g600);">📱 020 3924 0970 · 🌐 bramleyhealth.co.uk</div>
+                <div class="card-meta">
+                    <span class="badge b-green">⭐⭐⭐⭐ Outstanding</span>
+                    <span class="badge b-teal">Nursing</span>
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Mental Health</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="addFromSearch('Clarendon Nursing Home')">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Clarendon Nursing Home</div>
+                        <div class="card-sub">7A Zion Place, Thornton Heath CR7 8RR</div>
+                    </div>
+                    <span style="font-size:12px;font-weight:700;color:var(--teal);">0.8mi</span>
+                </div>
+                <div style="font-size:12px;color:var(--g600);">📱 020 8689 1004 · 🌐 bondcare.co.uk</div>
+                <div class="card-meta">
+                    <span class="badge b-blue">⭐⭐⭐ Good</span>
+                    <span class="badge b-teal">Nursing</span>
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Learning Disability</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="addFromSearch('Barrington Lodge')">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">Barrington Lodge</div>
+                        <div class="card-sub">9-15 Morland Road, Croydon CR0 6HA</div>
+                    </div>
+                    <span style="font-size:12px;font-weight:700;color:var(--teal);">1.2mi</span>
+                </div>
+                <div style="font-size:12px;color:var(--g600);">📱 020 8654 9136</div>
+                <div class="card-meta">
+                    <span class="badge b-blue">⭐⭐⭐ Good</span>
+                    <span class="badge b-teal">Nursing</span>
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Physical</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="addFromSearch('St Antonys')">
+                <div class="card-top">
+                    <div>
+                        <div class="card-title">St Antony's Care Home</div>
+                        <div class="card-sub">1 Wide Way, Mitcham CR4 1BP</div>
+                    </div>
+                    <span style="font-size:12px;font-weight:700;color:var(--teal);">1.4mi</span>
+                </div>
+                <div style="font-size:12px;color:var(--g600);">📱 020 8679 0752 · 🌐 stantonyscarehome.co.uk</div>
+                <div class="card-meta">
+                    <span class="badge b-blue">⭐⭐⭐ Good</span>
+                    <span class="badge b-teal">Dementia</span>
+                    <span class="badge b-teal">Learning Disability</span>
+                    <span class="badge b-teal">Mental Health</span>
+                </div>
+            </div>
+
+            <div style="text-align:center;padding:20px;font-size:12px;color:var(--g400);">
+                Showing 4 of 362 results · Scroll for more<br>
+                <span style="color:var(--teal);font-weight:500;">Data from CQC · Updated monthly</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="nav">
+        <div class="nav-i active" onclick="go('scrCases')">
+            <span class="ico">📋</span>
+            <span>Cases</span>
+        </div>
+        <div class="nav-i" onclick="go('scrHomes')">
+            <span class="ico">🏠</span>
+            <span>My Homes</span>
+        </div>
+        <div class="nav-i" onclick="go('scrNewCase')">
+            <span class="ico" style="width:40px;height:40px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;margin-top:-12px;box-shadow:0 2px 8px rgba(13,148,136,0.3);">+</span>
+            <span>New</span>
+        </div>
+        <div class="nav-i" onclick="go('scrSearch')">
+            <span class="ico">🔍</span>
+            <span>Search</span>
+        </div>
+        <div class="nav-i" onclick="alert('Settings: notification preferences, team members, export data')">
+            <span class="ico">⚙️</span>
+            <span>Settings</span>
+        </div>
+    </nav>
+</div>
+
+<script>
+function go(id) {
+    document.querySelectorAll('.scr').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
+    const labels = { scrCases: 0, scrHomes: 1, scrNewCase: 2, scrSearch: 3 };
+    if (labels[id] !== undefined) document.querySelectorAll('.nav-i')[labels[id]].classList.add('active');
+    window.scrollTo({top: 0});
+}
+
+function toggleChk(el) {
+    el.classList.toggle('sel');
+    updateBlastBtn();
+}
+
+function updateBlastBtn() {
+    const count = document.querySelectorAll('#scrBlast .chk.sel').length;
+    const ch = document.querySelector('.ch-btn.sel');
+    const chName = ch ? ch.textContent.trim().split('\n')[0] : 'WhatsApp';
+    document.getElementById('blastBtn').textContent = `⚡ Send to ${count} home${count !== 1 ? 's' : ''} via ${chName}`;
+}
+
+function selCh(btn) {
+    btn.parentElement.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    const isVoice = btn.textContent.includes('Voice');
+    document.getElementById('voiceSection').style.display = isVoice ? 'block' : 'none';
+    document.getElementById('autoDraft').style.display = isVoice ? 'none' : 'block';
+    updateBlastBtn();
+}
+
+function selOne(btn) {
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+}
+
+let recording = false;
+function toggleRecord() {
+    recording = !recording;
+    const btn = document.getElementById('voiceBtn');
+    const status = document.getElementById('voiceStatus');
+    if (recording) {
+        btn.classList.add('recording');
+        btn.textContent = '⏹️';
+        status.textContent = 'Recording... tap to stop';
+        status.style.color = '#dc2626';
+    } else {
+        btn.classList.remove('recording');
+        btn.textContent = '🎙️';
+        status.textContent = '✅ Voice note recorded (0:28)';
+        status.style.color = '#16a34a';
+    }
+}
+
+let blastRecording = false;
+function toggleBlastRecord() {
+    blastRecording = !blastRecording;
+    const btn = document.getElementById('blastVoice');
+    const status = document.getElementById('blastVoiceStatus');
+    if (blastRecording) {
+        btn.classList.add('recording');
+        btn.textContent = '⏹️';
+        status.textContent = 'Recording... tap to stop';
+        status.style.color = '#dc2626';
+    } else {
+        btn.classList.remove('recording');
+        btn.textContent = '▶️';
+        status.textContent = '✅ Recorded (0:22) · Tap to preview · Will be sent to all selected homes';
+        status.style.color = '#16a34a';
+    }
+}
+
+function caseCreated() {
+    alert('✅ Case created: Mr A, 82\n\nNow select which care homes to contact.');
+    go('scrBlast');
+}
+
+function blastSent() {
+    const count = document.querySelectorAll('#scrBlast .chk.sel').length;
+    alert(`✅ Sent to ${count} care homes!\n\nYour voice note has been delivered via WhatsApp.\nYou'll see responses in the Responses tab as they come in.`);
+    go('scrResponses');
+}
+
+function selectHome(name) {
+    alert(`✅ ${name} selected!\n\nTheir full contact details:\n📱 Tap to call\n💬 Tap to WhatsApp\n\nDelphi will help coordinate the admission process.`);
+}
+
+function addContact() {
+    alert('📱 To add a care home contact:\n\n1. Open your phone Contacts\n2. Share the contact via WhatsApp\n3. Send to SwiftPlace (+44 7591 799856)\n\nWe\'ll auto-match it to CQC data and add it to your list.');
+}
+
+function addFromSearch(name) {
+    alert(`✅ ${name} added to My Homes!\n\nYou can now include them in placement blasts.`);
+}
+</script>
+
+</body>
+</html>
