@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftPlace — Architecture & Implementation Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f172a;
+            --teal: #0d9488;
+            --teal-light: #5eead4;
+            --teal-dark: #0f766e;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --white: #ffffff;
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --blue: #2563eb;
+            --blue-light: #dbeafe;
+            --orange: #ea580c;
+            --orange-light: #fff7ed;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            line-height: 1.6;
+        }
+
+        /* NAV TABS */
+        .tab-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--navy);
+            display: flex;
+            gap: 0;
+            padding: 0 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .tab-btn {
+            padding: 16px 24px;
+            color: var(--gray-400);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--white); }
+        .tab-btn.active {
+            color: var(--teal-light);
+            border-bottom-color: var(--teal);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* HEADER */
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1e3a5f 100%);
+            color: white;
+            padding: 48px 32px 40px;
+            text-align: center;
+        }
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .page-header .subtitle {
+            font-size: 16px;
+            color: var(--teal-light);
+            font-weight: 500;
+        }
+        .page-header .badge {
+            display: inline-block;
+            background: rgba(13,148,136,0.2);
+            border: 1px solid var(--teal);
+            color: var(--teal-light);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+        /* SECTION */
+        .section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid var(--gray-200);
+        }
+        .section h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 20px 0 10px;
+            color: var(--gray-700);
+        }
+
+        /* ARCHITECTURE DIAGRAM */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .arch-layer {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px 24px;
+            position: relative;
+        }
+        .arch-layer.highlight { border-color: var(--teal); background: rgba(13,148,136,0.03); }
+        .arch-layer-label {
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            background: var(--white);
+            padding: 0 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-500);
+        }
+        .arch-layer.highlight .arch-layer-label { color: var(--teal-dark); }
+        .arch-components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .arch-component {
+            background: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 180px;
+        }
+        .arch-component .icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .icon-teal { background: rgba(13,148,136,0.1); }
+        .icon-blue { background: rgba(37,99,235,0.1); }
+        .icon-purple { background: rgba(124,58,237,0.1); }
+        .icon-orange { background: rgba(234,88,12,0.1); }
+        .icon-green { background: rgba(22,163,74,0.1); }
+        .arch-arrow {
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        /* FLOW DIAGRAM */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 24px 0;
+        }
+        .flow-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            position: relative;
+        }
+        .flow-step:not(:last-child) { padding-bottom: 24px; }
+        .flow-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+        .flow-step:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 17px;
+            top: 36px;
+            bottom: 0;
+            width: 2px;
+            background: var(--gray-200);
+        }
+        .flow-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .flow-body p { font-size: 13px; color: var(--gray-600); }
+        .flow-body .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .tag-green { background: var(--green-light); color: var(--green); }
+        .tag-blue { background: var(--blue-light); color: var(--blue); }
+        .tag-orange { background: var(--orange-light); color: var(--orange); }
+        .tag-purple { background: var(--purple-light); color: var(--purple); }
+
+        /* TIMELINE */
+        .timeline { margin: 24px 0; }
+        .timeline-phase {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            align-items: flex-start;
+        }
+        .timeline-marker {
+            width: 120px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .timeline-marker .period {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+        }
+        .timeline-marker .phase-name {
+            font-size: 16px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+        .timeline-detail {
+            flex: 1;
+            background: var(--gray-50);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--gray-300);
+        }
+        .timeline-detail.phase-1 { border-left-color: var(--teal); }
+        .timeline-detail.phase-2 { border-left-color: var(--blue); }
+        .timeline-detail.phase-3 { border-left-color: var(--purple); }
+        .timeline-detail.phase-4 { border-left-color: var(--orange); }
+        .timeline-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .timeline-detail ul {
+            list-style: none;
+            padding: 0;
+        }
+        .timeline-detail li {
+            font-size: 13px;
+            color: var(--gray-600);
+            padding: 3px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .timeline-detail li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--gray-400);
+        }
+        .milestone {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--green-light);
+            color: var(--green);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* DATA FLOW TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+        .data-table th {
+            background: var(--navy);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-table th:first-child { border-radius: 8px 0 0 0; }
+        .data-table th:last-child { border-radius: 0 8px 0 0; }
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .data-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        .data-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+        .data-table tr:nth-child(even) { background: var(--gray-50); }
+
+        /* STAT GRID */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: var(--gray-50);
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--teal-dark);
+        }
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* CALLOUT */
+        .callout {
+            background: rgba(13,148,136,0.05);
+            border: 1px solid rgba(13,148,136,0.2);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+        .callout strong { color: var(--teal-dark); }
+
+        /* DELPHI SECTION */
+        .delphi-highlight {
+            background: linear-gradient(135deg, rgba(13,148,136,0.05), rgba(37,99,235,0.05));
+            border: 2px solid var(--teal);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        .delphi-highlight h3 {
+            color: var(--teal-dark);
+            margin-top: 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .tab-nav { overflow-x: auto; padding: 0 12px; }
+            .tab-btn { padding: 12px 16px; font-size: 13px; }
+            .page-header { padding: 32px 20px 28px; }
+            .page-header h1 { font-size: 24px; }
+            .container { padding: 20px 16px; }
+            .section { padding: 20px; }
+            .timeline-phase { flex-direction: column; }
+            .timeline-marker { width: 100%; text-align: left; display: flex; gap: 8px; align-items: baseline; }
+            .arch-component { min-width: 140px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TAB NAVIGATION -->
+<nav class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('architecture')">🏗️ Architecture</button>
+    <button class="tab-btn" onclick="showTab('flow')">🔄 How It Works</button>
+    <button class="tab-btn" onclick="showTab('roadmap')">📅 Implementation Plan</button>
+    <button class="tab-btn" onclick="showTab('delphi')">🤝 Delphi Partnership</button>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+    <h1>SwiftPlace</h1>
+    <div class="subtitle">Demand-Push Care Placement Platform</div>
+    <div class="badge">Architecture & Implementation Plan — March 2026</div>
+</div>
+
+<!-- ===================== TAB 1: ARCHITECTURE ===================== -->
+<div id="architecture" class="tab-content active">
+<div class="container">
+
+    <div class="section">
+        <h2>🏗️ System Architecture</h2>
+        <p style="color: var(--gray-600); margin-bottom: 20px;">
+            SwiftPlace is a two-sided marketplace connecting <strong>commissioners</strong> (demand) with <strong>care homes</strong> (supply) through an anonymous matching engine. The platform is mobile-first, built for speed, and designed so that identity is only revealed on confirmed placement.
+        </p>
+
+        <div class="arch-diagram">
+            <!-- User Layer -->
+            <div class="arch-layer">
+                <div class="arch-layer-label">Users</div>
+                <div class="arch-components">
+                    <div class="arch-component">
+                        <div class="icon icon-blue">👤</div>
+                        <div>
+                            <div style="font-weight:700">Commissioners</div>
+                            <div style="font-size:11px;color:var(--gray-500)">LA / NHS discharge teams</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-green">🏠</div>
+                        <div>
+                            <div style="font-weight:700">Care Homes</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Managers / admissions</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-purple">⚙️</div>
+                        <div>
+                            <div style="font-weight:700">Admin Dashboard</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Ops & analytics team</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arch-arrow">▼</div>
+
+            <!-- App Layer -->
+            <div class="arch-layer highlight">
+                <div class="arch-layer-label">Application Layer</div>
+                <div class="arch-components">
+                    <div class="arch-component">
+                        <div class="icon icon-teal">📱</div>
+                        <div>
+                            <div style="font-weight:700">Mobile App (PWA)</div>
+                            <div style="font-size:11px;color:var(--gray-500)">60-second posting tool</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-teal">💬</div>
+                        <div>
+                            <div style="font-weight:700">WhatsApp Channel</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Post & respond via chat</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-teal">🌐</div>
+                        <div>
+                            <div style="font-weight:700">Web Dashboard</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Full management view</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arch-arrow">▼</div>
+
+            <!-- Core Engine -->
+            <div class="arch-layer highlight">
+                <div class="arch-layer-label">Core Platform</div>
+                <div class="arch-components">
+                    <div class="arch-component">
+                        <div class="icon icon-teal">🔒</div>
+                        <div>
+                            <div style="font-weight:700">Anonymisation Engine</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Identity hidden until match</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-teal">🎯</div>
+                        <div>
+                            <div style="font-weight:700">Matching Engine</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Location + care type + CQC</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-teal">🔔</div>
+                        <div>
+                            <div style="font-weight:700">Push Notification Service</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Instant alerts to matched homes</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-teal">🤖</div>
+                        <div>
+                            <div style="font-weight:700">AI Concierge</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Guided posting & response</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arch-arrow">▼</div>
+
+            <!-- Data Layer -->
+            <div class="arch-layer">
+                <div class="arch-layer-label">Data & Integrations</div>
+                <div class="arch-components">
+                    <div class="arch-component">
+                        <div class="icon icon-orange">📊</div>
+                        <div>
+                            <div style="font-weight:700">CQC Data Feed</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Auto-populated care home profiles</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-orange">📍</div>
+                        <div>
+                            <div style="font-weight:700">Geo / Postcode API</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Radius matching & maps</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-orange">📈</div>
+                        <div>
+                            <div style="font-weight:700">Market Intelligence DB</div>
+                            <div style="font-size:11px;color:var(--gray-500)">Pricing, demand, trends</div>
+                        </div>
+                    </div>
+                    <div class="arch-component">
+                        <div class="icon icon-orange">🔐</div>
+                        <div>
+                            <div style="font-weight:700">Auth & GDPR Layer</div>
+                            <div style="font-size:11px;color:var(--gray-500)">NHS DSP Toolkit compliant</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>Key design principle:</strong> Both sides interact through the platform anonymously. Identity is only revealed when a commissioner selects a care home — this prevents bypass and justifies the success fee.
+        </div>
+    </div>
+
+    <!-- TECH STACK -->
+    <div class="section">
+        <h2>⚡ Technology Stack</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Layer</th>
+                    <th>Technology</th>
+                    <th>Why</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Mobile App</strong></td>
+                    <td>Progressive Web App (React)</td>
+                    <td>Works on any phone, no app store needed, instant updates</td>
+                </tr>
+                <tr>
+                    <td><strong>Messaging</strong></td>
+                    <td>WhatsApp Business API (Twilio)</td>
+                    <td>Commissioners already use WhatsApp daily — zero friction</td>
+                </tr>
+                <tr>
+                    <td><strong>Backend</strong></td>
+                    <td>Node.js / Cloud Functions</td>
+                    <td>Serverless, scales to zero, pay-per-use</td>
+                </tr>
+                <tr>
+                    <td><strong>Database</strong></td>
+                    <td>PostgreSQL + Redis cache</td>
+                    <td>Reliable, fast matching queries, real-time availability</td>
+                </tr>
+                <tr>
+                    <td><strong>AI Layer</strong></td>
+                    <td>LLM agents (posting & matching)</td>
+                    <td>Natural language posting, smart care-type matching</td>
+                </tr>
+                <tr>
+                    <td><strong>Data</strong></td>
+                    <td>CQC Public API + Postcode.io</td>
+                    <td>Pre-populated care home profiles, accurate geo-matching</td>
+                </tr>
+                <tr>
+                    <td><strong>Notifications</strong></td>
+                    <td>FCM + WhatsApp + SMS fallback</td>
+                    <td>Guaranteed delivery — critical for urgent placements</td>
+                </tr>
+                <tr>
+                    <td><strong>Compliance</strong></td>
+                    <td>NHS DSP Toolkit, GDPR, ISO 27001</td>
+                    <td>Required for NHS/LA trust procurement</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- KEY NUMBERS -->
+    <div class="section">
+        <h2>📊 Platform at Scale</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-value">&lt;60s</div>
+                <div class="stat-label">Time to post a placement request</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">&lt;2hrs</div>
+                <div class="stat-label">Avg response time from care homes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5–8</div>
+                <div class="stat-label">Competing bids per placement</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">70%+</div>
+                <div class="stat-label">Placement conversion rate</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 2: HOW IT WORKS ===================== -->
+<div id="flow" class="tab-content">
+<div class="container">
+
+    <div class="section">
+        <h2>🔄 Placement Flow — Step by Step</h2>
+        <p style="color: var(--gray-600); margin-bottom: 24px;">
+            The entire placement cycle — from posting a need to filling a bed — takes minutes, not days.
+        </p>
+
+        <div class="flow-container">
+            <div class="flow-step">
+                <div class="flow-number" style="background:var(--blue)">1</div>
+                <div class="flow-body">
+                    <h4>Commissioner Posts Anonymous Request</h4>
+                    <p>Discharge coordinator opens the app (or sends a WhatsApp message). In 60 seconds, they post: patient needs, budget, location, urgency — all via dropdowns, no typing. The request is anonymised automatically.</p>
+                    <span class="tag tag-blue">60 seconds · Mobile-first</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-number" style="background:var(--teal)">2</div>
+                <div class="flow-body">
+                    <h4>Matching Engine Identifies Care Homes</h4>
+                    <p>Platform filters by radius, care type, CQC rating, and availability. Only homes that genuinely match get notified — no spam, no irrelevant alerts.</p>
+                    <span class="tag tag-green">Automatic · CQC-verified</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-number" style="background:var(--teal)">3</div>
+                <div class="flow-body">
+                    <h4>Care Homes Receive Push Alert</h4>
+                    <p>"New placement request matches your dementia unit — £850/wk budget, 5mi away, needed by Friday." Home managers see the opportunity immediately.</p>
+                    <span class="tag tag-green">Instant push notification</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-number" style="background:var(--teal)">4</div>
+                <div class="flow-body">
+                    <h4>Care Homes Compete with Bids</h4>
+                    <p>Homes respond with price and availability. "Available Thursday, £820/week, specialist dementia unit." Multiple homes bid — creating competitive pricing and fast responses.</p>
+                    <span class="tag tag-green">30-second response · Competitive</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-number" style="background:var(--purple)">5</div>
+                <div class="flow-body">
+                    <h4>Commissioner Compares & Selects</h4>
+                    <p>Anonymous responses displayed side by side: price, CQC rating, distance, availability. Commissioner taps to select the best match.</p>
+                    <span class="tag tag-purple">One-tap selection</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-number" style="background:var(--green)">6</div>
+                <div class="flow-body">
+                    <h4>Identity Revealed — Connection Made</h4>
+                    <p>Only NOW do both sides see each other's details. Direct connection to finalise the placement. Platform tracks the outcome and triggers the success fee after 30 days.</p>
+                    <span class="tag tag-orange">Success fee on confirmed placement</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHY ANONYMISATION -->
+    <div class="section">
+        <h2>🔒 Why Anonymisation Is the Model</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Problem</th>
+                    <th>How Anonymisation Solves It</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Commissioners bypass platform after first use</td>
+                    <td>Can't — they don't know which home responded until they select</td>
+                </tr>
+                <tr>
+                    <td>Care homes contact commissioners directly</td>
+                    <td>Can't — commissioner identity hidden until match confirmed</td>
+                </tr>
+                <tr>
+                    <td>"Who you know" bias in placements</td>
+                    <td>Homes compete on merit: price, quality, availability</td>
+                </tr>
+                <tr>
+                    <td>Justifying the success fee</td>
+                    <td>Platform creates genuine value — the matching moment only exists here</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="callout">
+            <strong>Proven model:</strong> Upwork, Bark.com, and Priceline all use anonymised matching to prevent bypass and justify platform fees. SwiftPlace applies the same proven mechanism to care placements.
+        </div>
+    </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 3: IMPLEMENTATION PLAN ===================== -->
+<div id="roadmap" class="tab-content">
+<div class="container">
+
+    <div class="section">
+        <h2>📅 Implementation Roadmap</h2>
+        <p style="color: var(--gray-600); margin-bottom: 24px;">
+            Four phases from first line of code to national scale. Each phase has a clear milestone before we move on.
+        </p>
+
+        <div class="timeline">
+
+            <!-- Phase 1 -->
+            <div class="timeline-phase">
+                <div class="timeline-marker">
+                    <div class="period">Months 1–2</div>
+                    <div class="phase-name" style="color:var(--teal)">Phase 1</div>
+                </div>
+                <div class="timeline-detail phase-1">
+                    <h4>🛠️ MVP Build + Single Hospital Pilot</h4>
+                    <ul>
+                        <li>Build 60-second posting tool (mobile PWA)</li>
+                        <li>Build care home response & notification flow</li>
+                        <li>Integrate CQC data feed (auto-populated profiles)</li>
+                        <li>WhatsApp Business channel for posting & responses</li>
+                        <li>Anonymisation engine — identity hidden until match</li>
+                        <li>Partner with 1 large hospital trust (free pilot)</li>
+                        <li>Pre-register 200 care homes in 25-mile radius</li>
+                        <li>Platform manager embedded with discharge team 2 days/wk</li>
+                    </ul>
+                    <div class="milestone">✅ Milestone: 50 successful placements</div>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="timeline-phase">
+                <div class="timeline-marker">
+                    <div class="period">Months 2–3</div>
+                    <div class="phase-name" style="color:var(--blue)">Phase 2</div>
+                </div>
+                <div class="timeline-detail phase-2">
+                    <h4>📊 Proof of Concept + Evidence Pack</h4>
+                    <ul>
+                        <li>Measure: placement time, cost savings, user satisfaction</li>
+                        <li>Build 5 detailed placement case studies</li>
+                        <li>ROI calculation — quantified savings for hospital and homes</li>
+                        <li>User testimonials (video) from discharge coordinators + managers</li>
+                        <li>Iterate product based on real-world feedback</li>
+                        <li>Begin competitive pricing data collection</li>
+                    </ul>
+                    <div class="milestone">✅ Milestone: Documented ROI + 80% satisfaction</div>
+                </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="timeline-phase">
+                <div class="timeline-marker">
+                    <div class="period">Months 4–6</div>
+                    <div class="phase-name" style="color:var(--purple)">Phase 3</div>
+                </div>
+                <div class="timeline-detail phase-3">
+                    <h4>🚀 Geographic Expansion</h4>
+                    <ul>
+                        <li>Add 2 neighbouring local authorities + 1 additional hospital</li>
+                        <li>Extend to community placements (not just discharge)</li>
+                        <li>Care home network expands via word-of-mouth + group outreach</li>
+                        <li>Activate success fee model (£200 floor / 2.5% of annual value)</li>
+                        <li>Premium features beta: priority notifications, response analytics</li>
+                        <li>Trade association partnerships (Care England, UKHCA)</li>
+                    </ul>
+                    <div class="milestone">✅ Milestone: 300+ active homes, revenue live</div>
+                </div>
+            </div>
+
+            <!-- Phase 4 -->
+            <div class="timeline-phase">
+                <div class="timeline-marker">
+                    <div class="period">Months 7–12</div>
+                    <div class="phase-name" style="color:var(--orange)">Phase 4</div>
+                </div>
+                <div class="timeline-detail phase-4">
+                    <h4>📈 Scale & Data Moat</h4>
+                    <ul>
+                        <li>15+ local authorities, 8+ NHS trusts</li>
+                        <li>AI-powered matching (learning from placement success patterns)</li>
+                        <li>Market intelligence products: pricing benchmarks, demand forecasting</li>
+                        <li>API integrations with hospital/LA discharge systems</li>
+                        <li>Cross-boundary placement matching</li>
+                        <li>Data moat becomes unassailable — transaction history competitors can't replicate</li>
+                    </ul>
+                    <div class="milestone">✅ Milestone: £1M+ ARR, network effects accelerating</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- REVENUE PROJECTIONS -->
+    <div class="section">
+        <h2>💰 Revenue Trajectory (Conservative)</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-value">£380K</div>
+                <div class="stat-label">Year 1 Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">£1.4M</div>
+                <div class="stat-label">Year 2 Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">£5.4M</div>
+                <div class="stat-label">Year 3 Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">15–20</div>
+                <div class="stat-label">Team size at scale</div>
+            </div>
+        </div>
+        <div class="callout">
+            Revenue model: <strong>Success fee per confirmed placement</strong> — higher of £200 flat or 2.5% of annual placement value. Commissioners never pay. Care homes only pay on confirmed placements lasting 30+ days.
+        </div>
+    </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 4: DELPHI PARTNERSHIP ===================== -->
+<div id="delphi" class="tab-content">
+<div class="container">
+
+    <div class="section">
+        <h2>🤝 What This Means for Delphi</h2>
+        <p style="color: var(--gray-600); margin-bottom: 20px;">
+            SwiftPlace turns Delphi's empty beds into filled beds — faster, cheaper, and with zero effort from your team beyond responding to alerts.
+        </p>
+
+        <div class="delphi-highlight">
+            <h3>Your Empty Beds Cost ~£150/Day</h3>
+            <p>Every unfilled bed is lost revenue that never comes back. SwiftPlace delivers <strong>qualified, funded placement requests directly to you</strong> — real commissioners with real budgets, not family enquiries that go cold.</p>
+        </div>
+
+        <h3>How Delphi Benefits</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Benefit</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Funded demand delivered to you</strong></td>
+                    <td>Every request comes with an approved budget and named funding stream (LA, CHC, joint package)</td>
+                </tr>
+                <tr>
+                    <td><strong>Zero marketing cost</strong></td>
+                    <td>Free to receive notifications and respond. You only pay on confirmed placements lasting 30+ days</td>
+                </tr>
+                <tr>
+                    <td><strong>Competitive advantage</strong></td>
+                    <td>You see placement opportunities that other homes don't — respond fast, win the placement</td>
+                </tr>
+                <tr>
+                    <td><strong>Market intelligence</strong></td>
+                    <td>See real demand in your area — what commissioners are looking for, at what budget, and how urgent</td>
+                </tr>
+                <tr>
+                    <td><strong>Simple success fee</strong></td>
+                    <td>Higher of £200 or 2.5% of annual placement value. For a £900/wk nursing placement = £1,170 one-off. You're gaining £46,800/year in revenue.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>What We Ask From Delphi</h3>
+        <div class="delphi-highlight">
+            <ul style="list-style:none; padding:0;">
+                <li style="padding: 6px 0;">✅ <strong>Join as a pilot partner</strong> — free, no commitment, no risk</li>
+                <li style="padding: 6px 0;">✅ <strong>Respond to matching placement alerts</strong> — 30 seconds per response</li>
+                <li style="padding: 6px 0;">✅ <strong>Provide feedback</strong> — help us build the tool care homes actually need</li>
+                <li style="padding: 6px 0;">✅ <strong>Share with your network</strong> — if it works for you, tell other homes</li>
+            </ul>
+        </div>
+
+        <h3>The Economics — One Placement Example</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Without SwiftPlace</th>
+                    <th>With SwiftPlace</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Time to fill bed</strong></td>
+                    <td>3–5 days (marketing, calls, follow-ups)</td>
+                    <td>&lt;24 hours</td>
+                </tr>
+                <tr>
+                    <td><strong>Revenue lost while empty</strong></td>
+                    <td>£450–£750 (3–5 days × £150)</td>
+                    <td>£150 (1 day)</td>
+                </tr>
+                <tr>
+                    <td><strong>Marketing cost</strong></td>
+                    <td>£500–2,000/month (spread across occupancy)</td>
+                    <td>£0</td>
+                </tr>
+                <tr>
+                    <td><strong>Success fee</strong></td>
+                    <td>N/A</td>
+                    <td>£1,170 one-off (nursing @ £900/wk)</td>
+                </tr>
+                <tr>
+                    <td><strong>Annual revenue from placement</strong></td>
+                    <td>£46,800</td>
+                    <td>£46,800</td>
+                </tr>
+                <tr>
+                    <td style="background:var(--green-light)"><strong>Net gain from using SwiftPlace</strong></td>
+                    <td style="background:var(--green-light)">—</td>
+                    <td style="background:var(--green-light)"><strong>£300–600 saved on empty days + no marketing cost. Fee is 2.5% of revenue generated.</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</div>
+
+<script>
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
