@@ -202,8 +202,8 @@
             <!-- Add contact prompt -->
             <div style="background:linear-gradient(135deg,rgba(13,148,136,0.05),rgba(37,99,235,0.05));border:2px dashed var(--teal);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px;cursor:pointer;" onclick="addContact()">
                 <div style="font-size:24px;margin-bottom:4px;">📱</div>
-                <div style="font-size:13px;font-weight:600;color:var(--teal-dark);">Add Care Home Contact</div>
-                <div style="font-size:11px;color:var(--g500);margin-top:2px;">Share a contact from your phone via WhatsApp,<br>or tap to search the CQC directory</div>
+                <div style="font-size:13px;font-weight:600;color:var(--teal-dark);">+ Add from WhatsApp</div>
+                <div style="font-size:11px;color:var(--g500);margin-top:2px;">Opens WhatsApp → share your care home contacts there</div>
             </div>
 
             <!-- Contact list -->
@@ -725,7 +725,7 @@ function selectHome(name) {
 }
 
 function addContact() {
-    alert('📱 To add a care home contact:\n\n1. Open your phone Contacts\n2. Share the contact via WhatsApp\n3. Send to SwiftPlace (+44 7591 799856)\n\nWe\'ll auto-match it to CQC data and add it to your list.');
+    window.open('https://wa.me/447591799856?text=Hi%2C%20I%27d%20like%20to%20add%20care%20home%20contacts.%20I%27ll%20share%20them%20here.', '_blank');
 }
 
 function addFromSearch(name) {
