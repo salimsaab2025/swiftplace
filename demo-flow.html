@@ -1,724 +1,1071 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftPlace — Live Demo Walkthrough</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy: #0f172a;
-            --teal: #0d9488;
-            --teal-light: #5eead4;
-            --teal-dark: #0f766e;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --white: #ffffff;
-            --red: #dc2626;
-            --green: #16a34a;
-            --blue: #2563eb;
-            --purple: #7c3aed;
-            --orange: #ea580c;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SwiftPlace — The right placement, found fast.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --navy: #0f172a;
+    --teal: #0d9488;
+    --teal-light: #14b8a6;
+    --teal-bg: #f0fdfa;
+    --purple-from: #7c3aed;
+    --purple-to: #a855f7;
+    --green: #22c55e;
+    --red: #ef4444;
+    --orange: #f59e0b;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --whatsapp-green: #25d366;
+    --whatsapp-bg: #e5ddd5;
+    --whatsapp-bubble-in: #ffffff;
+    --whatsapp-bubble-out: #dcf8c6;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,.12);
+  }
 
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--gray-100);
-            color: var(--navy);
-        }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray-100);
+    color: var(--navy);
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        .app {
-            max-width: 430px;
-            margin: 0 auto;
-            background: var(--white);
-            min-height: 100vh;
-            position: relative;
-        }
+  .app {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100dvh;
+    background: #fff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,.08);
+  }
 
-        /* Header */
-        .header {
-            background: var(--white);
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--gray-200);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+  /* ── Header ── */
+  .header {
+    background: var(--navy);
+    padding: 16px 20px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 10;
+  }
 
-        .logo { display: flex; align-items: center; gap: 8px; }
-        .logo-icon { width: 32px; height: 32px; background: var(--teal); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 18px; }
-        .logo-text { font-weight: 700; font-size: 16px; }
-        .logo-tag { font-size: 9px; color: var(--teal); font-weight: 500; }
+  .logo {
+    width: 36px; height: 36px;
+    background: var(--navy);
+    border: 2px solid var(--teal);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .logo span {
+    color: var(--teal);
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1;
+  }
+  .logo::after {
+    content: '';
+    position: absolute;
+    right: -4px; top: 50%;
+    transform: translateY(-50%);
+    width: 6px; height: 14px;
+    background: repeating-linear-gradient(
+      0deg,
+      var(--teal) 0px, var(--teal) 2px,
+      transparent 2px, transparent 4px
+    );
+    border-radius: 1px;
+    opacity: .7;
+  }
 
-        .view-label {
-            background: var(--gray-100);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--gray-500);
-        }
+  .header-text {
+    flex: 1;
+  }
+  .header-title {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+  .header-tagline {
+    color: var(--teal-light);
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 1px;
+  }
 
-        /* Screen */
-        .screen { display: none; padding: 0; }
-        .screen.active { display: block; }
+  /* ── Progress Bar ── */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    padding: 12px 20px 8px;
+    background: #fff;
+  }
+  .progress-step {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--gray-200);
+    transition: background .4s ease;
+  }
+  .progress-step.active {
+    background: var(--teal);
+  }
+  .progress-step.done {
+    background: var(--teal);
+  }
 
-        .section { padding: 20px; }
+  /* ── Narrator Bar ── */
+  .narrator {
+    background: linear-gradient(135deg, var(--purple-from), var(--purple-to));
+    color: #fff;
+    padding: 14px 20px;
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 500;
+    position: relative;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .narrator::before {
+    content: '🎬';
+    font-size: 16px;
+    flex-shrink: 0;
+  }
 
-        /* Progress bar */
-        .progress-bar {
-            display: flex;
-            gap: 4px;
-            padding: 12px 20px;
-            background: var(--gray-50);
-            border-bottom: 1px solid var(--gray-200);
-        }
-        .progress-step {
-            flex: 1;
-            height: 4px;
-            border-radius: 2px;
-            background: var(--gray-200);
-        }
-        .progress-step.done { background: var(--teal); }
-        .progress-step.current { background: var(--teal-light); }
+  /* ── View Label ── */
+  .view-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    margin: 14px 20px 4px;
+    background: var(--gray-100);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    width: fit-content;
+  }
 
-        /* Cards */
-        .card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        }
+  /* ── Screen Content ── */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 20px 20px;
+    -webkit-overflow-scrolling: touch;
+  }
 
-        /* Buttons */
-        .btn {
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            width: 100%;
-            transition: all 0.15s;
-        }
-        .btn-primary { background: var(--teal); color: white; }
-        .btn-primary:hover { background: var(--teal-dark); }
-        .btn-dark { background: var(--navy); color: white; }
-        .btn-outline { background: white; color: var(--navy); border: 1px solid var(--gray-300); }
-        .btn-sm { padding: 8px 14px; font-size: 12px; width: auto; }
+  /* ── Bottom Button ── */
+  .bottom-bar {
+    padding: 16px 20px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid var(--gray-100);
+  }
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: -.01em;
+  }
+  .btn-primary:active {
+    transform: scale(.98);
+    background: #0a7a70;
+  }
 
-        /* Narration bar */
-        .narrator {
-            background: linear-gradient(135deg, #1e1b4b, #312e81);
-            color: white;
-            padding: 14px 20px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .narrator-icon { font-size: 18px; }
-        .narrator-text { flex: 1; line-height: 1.4; }
-        .narrator strong { color: #a5b4fc; }
+  /* ── Screens (hidden by default) ── */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp .4s ease; }
 
-        /* Notification animation */
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(.9); }
+    70% { transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+  }
 
-        .notification {
-            background: var(--navy);
-            color: white;
-            margin: 12px 20px;
-            border-radius: 12px;
-            padding: 14px;
-            animation: slideDown 0.4s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+  /* ── Form Styles (Screen 1) ── */
+  .case-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .form-row {
+    display: flex;
+    gap: 8px;
+  }
+  .form-field {
+    flex: 1;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+  }
+  .form-field.full { flex: unset; }
+  .field-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 3px;
+  }
+  .field-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .field-value.urgent {
+    color: var(--red);
+  }
+  .field-value.teal {
+    color: var(--teal);
+  }
 
-        .bid-card {
-            animation: fadeIn 0.3s ease;
-        }
+  /* ── Home Selection (Screen 2) ── */
+  .home-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .home-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--teal);
+    border-radius: var(--radius-sm);
+    animation: slideIn .4s ease backwards;
+  }
+  .home-item:nth-child(1) { animation-delay: .05s; }
+  .home-item:nth-child(2) { animation-delay: .1s; }
+  .home-item:nth-child(3) { animation-delay: .15s; }
+  .home-item:nth-child(4) { animation-delay: .2s; }
 
-        /* Response comparison */
-        .response-card {
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .response-card:hover { border-color: var(--teal); background: rgba(13,148,136,0.02); }
-        .response-card.selected { border-color: var(--teal); background: rgba(13,148,136,0.05); }
+  .checkbox {
+    width: 22px; height: 22px;
+    background: var(--teal);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .checkbox svg { width: 14px; height: 14px; }
 
-        /* Badge */
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-        .badge-red { background: #fef2f2; color: var(--red); }
-        .badge-green { background: #dcfce7; color: var(--green); }
-        .badge-blue { background: #dbeafe; color: var(--blue); }
-        .badge-teal { background: #f0fdfa; color: var(--teal-dark); }
-        .badge-purple { background: #ede9fe; color: var(--purple); }
-        .badge-orange { background: #fff7ed; color: var(--orange); }
+  .home-info { flex: 1; }
+  .home-name { font-size: 14px; font-weight: 600; }
+  .home-meta { font-size: 12px; color: var(--gray-500); margin-top: 2px; display: flex; gap: 8px; }
+  .badge-outstanding {
+    background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px;
+  }
+  .badge-good {
+    background: #d1fae5; color: #065f46; font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px;
+  }
+  .home-source {
+    font-size: 10px; color: var(--gray-400); margin-top: 3px;
+  }
 
-        /* Connection reveal */
-        .reveal {
-            text-align: center;
-            padding: 32px 20px;
-        }
-        .reveal-icon { font-size: 48px; margin-bottom: 12px; }
-        .reveal-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-        .reveal-sub { font-size: 14px; color: var(--gray-500); }
+  /* Voice Widget */
+  .voice-widget {
+    margin-top: 14px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+  }
+  .voice-label { font-size: 12px; font-weight: 600; color: var(--gray-500); margin-bottom: 10px; }
+  .mic-btn {
+    width: 56px; height: 56px;
+    background: var(--red);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: none; cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(239,68,68,.4);
+    animation: pulse-mic 2s infinite;
+  }
+  .mic-btn svg { width: 24px; height: 24px; fill: #fff; }
+  @keyframes pulse-mic {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,.4); }
+    70% { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+  .voice-status { font-size: 13px; font-weight: 600; color: var(--red); margin-top: 8px; }
+  .voice-duration { font-size: 12px; color: var(--gray-400); }
 
-        /* Delphi concierge */
-        .delphi-box {
-            background: linear-gradient(135deg, #0f172a, #1e3a5f);
-            border-radius: 12px;
-            padding: 18px;
-            color: white;
-            margin: 16px 0;
-        }
-        .delphi-step {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-        .delphi-step.active { background: rgba(255,255,255,0.08); }
-        .delphi-step.pending { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); }
+  .channel-select {
+    margin-top: 12px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: #dcf8e8;
+    border: 1.5px solid var(--whatsapp-green);
+    border-radius: var(--radius-sm);
+  }
+  .channel-icon { font-size: 18px; }
+  .channel-text { font-size: 13px; font-weight: 600; color: #128c7e; }
 
-        /* Bottom nav */
-        .bottom-action {
-            position: sticky;
-            bottom: 0;
-            padding: 16px 20px;
-            background: white;
-            border-top: 1px solid var(--gray-200);
-        }
-    </style>
+  /* ── WhatsApp Screen (Screen 3) ── */
+  .whatsapp-container {
+    background: var(--whatsapp-bg);
+    border-radius: var(--radius-sm);
+    padding: 16px 12px;
+    margin-top: 8px;
+    min-height: 260px;
+  }
+  .wa-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .wa-avatar {
+    width: 36px; height: 36px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .wa-contact-name { font-size: 15px; font-weight: 600; color: var(--navy); }
+  .wa-contact-sub { font-size: 11px; color: var(--gray-500); }
+
+  .wa-bubble {
+    max-width: 88%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    position: relative;
+    animation: popIn .3s ease backwards;
+  }
+  .wa-bubble.incoming {
+    background: var(--whatsapp-bubble-in);
+    border-top-left-radius: 4px;
+    margin-right: auto;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  }
+  .wa-bubble.outgoing {
+    background: var(--whatsapp-bubble-out);
+    border-top-right-radius: 4px;
+    margin-left: auto;
+    animation-delay: .6s;
+  }
+  .wa-voice-note {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 0;
+  }
+  .wa-play-btn {
+    width: 32px; height: 32px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .wa-play-btn svg { width: 14px; height: 14px; fill: #fff; margin-left: 2px; }
+  .wa-waveform {
+    flex: 1; height: 28px;
+    display: flex; align-items: center; gap: 2px;
+  }
+  .wa-waveform span {
+    display: block;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--teal);
+    opacity: .5;
+  }
+  .wa-voice-dur { font-size: 11px; color: var(--gray-400); flex-shrink: 0; }
+
+  .wa-summary {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0,0,0,.06);
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.5;
+  }
+  .wa-time {
+    font-size: 10px;
+    color: var(--gray-400);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* ── Response Cards (Screen 4) ── */
+  .response-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .response-card {
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray-200);
+    background: #fff;
+    animation: slideIn .35s ease backwards;
+  }
+  .response-card:nth-child(1) { animation-delay: .05s; }
+  .response-card:nth-child(2) { animation-delay: .12s; }
+  .response-card:nth-child(3) { animation-delay: .19s; }
+  .response-card:nth-child(4) { animation-delay: .26s; }
+
+  .response-card.available { border-color: var(--teal); }
+  .response-card.unavailable { border-color: var(--gray-200); opacity: .7; }
+  .response-card.pending { border-color: var(--orange); border-style: dashed; }
+
+  .rc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .rc-name { font-size: 14px; font-weight: 700; }
+  .rc-status {
+    font-size: 11px; font-weight: 700; padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .rc-status.green { background: #d1fae5; color: #065f46; }
+  .rc-status.red { background: #fee2e2; color: #991b1b; }
+  .rc-status.orange { background: #fef3c7; color: #92400e; }
+
+  .rc-details {
+    display: flex; flex-wrap: wrap; gap: 6px 14px;
+    margin-top: 8px;
+    font-size: 12px; color: var(--gray-500);
+  }
+  .rc-details strong { color: var(--navy); font-weight: 600; }
+  .rc-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--gray-600);
+    font-style: italic;
+    padding: 6px 10px;
+    background: var(--gray-50);
+    border-radius: 6px;
+  }
+
+  .nudge-btn {
+    margin-top: 8px;
+    padding: 6px 14px;
+    font-size: 12px; font-weight: 600;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1.5px solid #fb923c;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ── Connection Card (Screen 5) ── */
+  .connection-card {
+    margin-top: 8px;
+    background: var(--teal-bg);
+    border: 2px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+    animation: popIn .4s ease;
+  }
+  .cc-header {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .cc-icon { font-size: 32px; margin-bottom: 6px; }
+  .cc-title { font-size: 18px; font-weight: 800; color: var(--teal); }
+
+  .cc-details {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 14px;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    margin-bottom: 14px;
+  }
+  .cc-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+  }
+  .cc-row-icon { font-size: 16px; width: 24px; text-align: center; }
+  .cc-row-label { color: var(--gray-500); }
+  .cc-row-value { font-weight: 600; color: var(--navy); margin-left: auto; }
+
+  .fee-box {
+    padding: 14px;
+    background: #fffbeb;
+    border: 1.5px solid #fbbf24;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .fee-box strong { color: #92400e; }
+  .fee-note {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+
+  .privacy-box {
+    padding: 12px 14px;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .privacy-box span:first-child { font-size: 16px; flex-shrink: 0; }
+
+  /* ── Outcome (Screen 6) ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .stat-card {
+    background: var(--navy);
+    color: #fff;
+    padding: 16px 14px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    animation: popIn .35s ease backwards;
+  }
+  .stat-card:nth-child(1) { animation-delay: .05s; }
+  .stat-card:nth-child(2) { animation-delay: .1s; }
+  .stat-card:nth-child(3) { animation-delay: .15s; }
+  .stat-card:nth-child(4) { animation-delay: .2s; }
+  .stat-value { font-size: 24px; font-weight: 800; color: var(--teal-light); }
+  .stat-label { font-size: 11px; color: var(--gray-400); margin-top: 4px; font-weight: 500; }
+
+  .wins-section { margin-top: 14px; }
+  .wins-block {
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    animation: slideIn .35s ease backwards;
+  }
+  .wins-block:nth-child(1) { animation-delay: .25s; }
+  .wins-block:nth-child(2) { animation-delay: .35s; }
+  .wins-block:nth-child(3) { animation-delay: .45s; }
+
+  .wins-block.commissioner { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .wins-block.carehome { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .wins-block.swiftplace { background: var(--teal-bg); border: 1px solid #99f6e4; }
+
+  .wins-title {
+    font-size: 13px; font-weight: 700; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .wins-list {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .wins-list li {
+    font-size: 12px;
+    color: var(--gray-700);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .wins-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    color: var(--teal);
+  }
+
+  .everyone-box {
+    margin-top: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--navy), var(--gray-800));
+    color: #fff;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    animation: popIn .4s ease .55s backwards;
+  }
+  .everyone-box .sub {
+    font-size: 12px; font-weight: 500;
+    color: var(--teal-light);
+    margin-top: 4px;
+  }
+
+  /* ── Section title ── */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
+</style>
 </head>
 <body>
 
 <div class="app">
-    <header class="header">
-        <div class="logo">
-            <div class="logo-icon">S</div>
-            <div>
-                <div class="logo-text">SwiftPlace</div>
-                <div class="logo-tag">The right bed, found fast.</div>
-            </div>
-        </div>
-        <div class="view-label" id="viewLabel">👤 Commissioner</div>
-    </header>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo"><span>S</span></div>
+    <div class="header-text">
+      <div class="header-title">SwiftPlace</div>
+      <div class="header-tagline">The right placement, found fast.</div>
+    </div>
+  </div>
 
-    <!-- SCREEN 1: Commissioner posts request -->
-    <div class="screen active" id="screen1">
-        <div class="narrator">
-            <span class="narrator-icon">📖</span>
-            <span class="narrator-text"><strong>Scene:</strong> Sarah, discharge coordinator at Croydon University Hospital, has a patient who needs a dementia nursing bed by Friday. She opens SwiftPlace on her phone.</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-step current"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-        </div>
-        <div class="section">
-            <div style="font-size:18px;font-weight:700;margin-bottom:4px;">New Placement Request</div>
-            <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">60-second posting · anonymous until match</div>
+  <!-- Progress -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step"></div>
+    <div class="progress-step"></div>
+    <div class="progress-step"></div>
+    <div class="progress-step"></div>
+    <div class="progress-step"></div>
+    <div class="progress-step"></div>
+  </div>
 
-            <!-- Filled form summary -->
-            <div class="card" style="background:var(--gray-50);">
-                <div style="font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Request Summary</div>
-                <div style="display:flex;flex-direction:column;gap:8px;">
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Service user</span>
-                        <span style="font-weight:600;">👤 Adult</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Location</span>
-                        <span style="font-weight:600;">📍 CR7 7YE · 10mi radius</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Care type</span>
-                        <span style="font-weight:600;">🧠 Dementia + 🏥 Nursing</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Additional needs</span>
-                        <span style="font-weight:600;">PEG feed · Wandering risk</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Budget</span>
-                        <span style="font-weight:600;">£900/week</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Urgency</span>
-                        <span style="font-weight:600;">🔴 24 hours (discharge Friday)</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:13px;">
-                        <span style="color:var(--gray-500);">Funding</span>
-                        <span style="font-weight:600;">CHC Funded</span>
-                    </div>
-                    <div style="padding-top:8px;border-top:1px solid var(--gray-200);font-size:12px;color:var(--gray-500);">
-                        Notes: 82yr male, advanced dementia, requires specialist dementia unit with PEG experience. Family in Croydon area — proximity important.
-                    </div>
-                </div>
-            </div>
+  <!-- Narrator -->
+  <div class="narrator" id="narrator"></div>
 
-            <div style="background:#f0fdfa;border-radius:10px;padding:12px;font-size:13px;color:var(--teal-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-                <span>🏠</span> 28 care homes within radius will be notified
-            </div>
+  <!-- View Label -->
+  <div class="view-label" id="viewLabel"></div>
+
+  <!-- Screen Content Area -->
+  <div class="screen-content" id="screenContent">
+
+    <!-- Screen 1: Create Case -->
+    <div class="screen" id="screen1">
+      <div class="case-form">
+        <div class="form-row">
+          <div class="form-field">
+            <span class="field-label">Patient</span>
+            <span class="field-value">Mr A</span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Age</span>
+            <span class="field-value">82</span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Sex</span>
+            <span class="field-value">Male</span>
+          </div>
         </div>
-        <div class="bottom-action">
-            <button class="btn btn-primary" onclick="postRequest()">⚡ Post Request</button>
+        <div class="form-field full">
+          <span class="field-label">Care Needs</span>
+          <span class="field-value">Dementia + Nursing</span>
         </div>
+        <div class="form-field full">
+          <span class="field-label">Additional Requirements</span>
+          <span class="field-value">PEG feed</span>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <span class="field-label">Budget</span>
+            <span class="field-value">£900/wk</span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Funding</span>
+            <span class="field-value teal">CHC Funded</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <span class="field-label">Urgency</span>
+            <span class="field-value urgent">Within 24 hours</span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Area</span>
+            <span class="field-value">Croydon</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- SCREEN 2: Request posted, notifications going out -->
+    <!-- Screen 2: Select Homes & Voice Note -->
     <div class="screen" id="screen2">
-        <div class="narrator">
-            <span class="narrator-icon">📖</span>
-            <span class="narrator-text"><strong>Posted in 47 seconds.</strong> The request is now anonymous — "Placement #4826." 28 matching care homes are being notified right now.</span>
+      <div class="section-title">Selected Homes (4)</div>
+      <div class="home-list">
+        <div class="home-item">
+          <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="home-info">
+            <div class="home-name">Chestnut Lodge</div>
+            <div class="home-meta"><span class="badge-outstanding">Outstanding</span> <span>0.3 mi</span></div>
+            <div class="home-source">📋 My Contacts</div>
+          </div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-step done"></div>
-            <div class="progress-step current"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
+        <div class="home-item">
+          <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="home-info">
+            <div class="home-name">Thistle Hill Hall</div>
+            <div class="home-meta"><span class="badge-outstanding">Outstanding</span> <span>4.2 mi</span></div>
+            <div class="home-source">🔍 CQC Directory</div>
+          </div>
         </div>
-        <div class="section">
-            <div style="text-align:center;padding:20px 0;">
-                <div style="font-size:48px;margin-bottom:8px;">✅</div>
-                <div style="font-size:20px;font-weight:700;">Request #4826 Posted</div>
-                <div style="font-size:14px;color:var(--gray-500);margin-top:4px;">Dementia + Nursing · £900/wk · CR7 · 🔴 24hrs</div>
-            </div>
+        <div class="home-item">
+          <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="home-info">
+            <div class="home-name">Albany Lodge</div>
+            <div class="home-meta"><span class="badge-good">Good</span> <span>0.8 mi</span></div>
+            <div class="home-source">📋 My Contacts</div>
+          </div>
+        </div>
+        <div class="home-item">
+          <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="home-info">
+            <div class="home-name">Sunrise Care</div>
+            <div class="home-meta"><span class="badge-good">Good</span> <span>2.1 mi</span></div>
+            <div class="home-source">🔍 CQC Directory</div>
+          </div>
+        </div>
+      </div>
 
-            <div style="background:var(--gray-50);border-radius:12px;padding:16px;margin-bottom:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                    <span style="font-size:14px;font-weight:600;">Notifications sent</span>
-                    <span style="font-size:13px;color:var(--teal);font-weight:600;">28 homes</span>
-                </div>
-                <div style="background:var(--teal);height:6px;border-radius:3px;overflow:hidden;">
-                    <div style="background:var(--teal-light);height:100%;width:100%;animation:pulse 1.5s infinite;"></div>
-                </div>
-                <div style="font-size:12px;color:var(--gray-400);margin-top:8px;">Homes are receiving your request now. You'll get a push alert when bids come in.</div>
-            </div>
+      <div class="voice-widget">
+        <div class="voice-label">Record Voice Note</div>
+        <button class="mic-btn">
+          <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <div class="voice-status">● Recording 0:18</div>
+        <div class="voice-duration">"82-year-old male, dementia and nursing, PEG feed…"</div>
+      </div>
 
-            <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--gray-700);">What happens next:</div>
-            <div style="display:flex;flex-direction:column;gap:6px;">
-                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
-                    <span style="color:var(--teal);">1.</span> Matching care homes review your anonymous request
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
-                    <span style="color:var(--teal);">2.</span> They respond with price and availability
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
-                    <span style="color:var(--teal);">3.</span> You compare bids and select the best match
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);">
-                    <span style="color:var(--teal);">4.</span> Identity revealed — direct connection made
-                </div>
-            </div>
-        </div>
-        <div class="bottom-action">
-            <button class="btn btn-dark" onclick="showCareHomeNotifications()">📱 Switch to Care Home View →</button>
-        </div>
+      <div class="channel-select">
+        <span class="channel-icon">💬</span>
+        <span class="channel-text">WhatsApp Voice Note</span>
+        <span style="margin-left:auto;font-size:13px;color:#128c7e;">✓ Selected</span>
+      </div>
     </div>
 
-    <!-- SCREEN 3: Care Home receives notification (Thistle Hill Hall) -->
+    <!-- Screen 3: WhatsApp View -->
     <div class="screen" id="screen3">
-        <div class="narrator">
-            <span class="narrator-icon">📖</span>
-            <span class="narrator-text"><strong>Meanwhile at Thistle Hill Hall...</strong> The care home manager gets a push notification. They open SwiftPlace and see the anonymous request.</span>
+      <div class="whatsapp-container">
+        <div class="wa-header">
+          <div class="wa-avatar">S</div>
+          <div>
+            <div class="wa-contact-name">SwiftPlace</div>
+            <div class="wa-contact-sub">Placement enquiry</div>
+          </div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step current"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
-        </div>
-        <div class="section">
-            <div class="notification">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:11px;font-weight:600;color:var(--teal-light);">🔔 NEW PLACEMENT ALERT</span>
-                    <span style="font-size:11px;color:rgba(255,255,255,0.5);">Just now</span>
-                </div>
-                <div style="font-size:14px;font-weight:600;">Dementia + Nursing · £900/wk · 4.2mi from you</div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">🔴 URGENT — 24 hours · CHC Funded · PEG feed required</div>
-            </div>
 
-            <!-- Request detail -->
-            <div class="card">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-                    <div>
-                        <div style="font-size:16px;font-weight:700;">#4826 · Dementia + Nursing</div>
-                        <div style="font-size:12px;color:var(--gray-500);margin-top:2px;">82yr male · PEG feed · Wandering risk</div>
-                    </div>
-                    <span class="badge badge-red">🔴 24HRS</span>
-                </div>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-                    <span class="badge badge-teal">📍 4.2mi away</span>
-                    <span class="badge badge-blue">💰 £900/wk budget</span>
-                    <span class="badge badge-orange">CHC Funded</span>
-                </div>
-                <div style="font-size:12px;color:var(--gray-500);padding:10px;background:var(--gray-50);border-radius:8px;margin-bottom:12px;">
-                    Advanced dementia, requires specialist unit with PEG experience. Family nearby — proximity important.
-                </div>
-                <div style="font-size:12px;color:var(--gray-400);">0 responses yet · Be first to respond</div>
+        <div class="wa-bubble incoming">
+          <div class="wa-voice-note">
+            <div class="wa-play-btn">
+              <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
+            <div class="wa-waveform" id="waveform"></div>
+            <span class="wa-voice-dur">0:18</span>
+          </div>
+          <div class="wa-summary">
+            📋 <strong>Placement enquiry:</strong> 82yr male, dementia + nursing, PEG feed, CHC funded, £900/wk, Croydon area, needed within 24hrs
+          </div>
+          <div class="wa-time">09:14</div>
+        </div>
 
-            <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--gray-700);">Your response:</div>
-            <div style="display:flex;gap:8px;margin-bottom:12px;">
-                <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:12px;text-align:center;border:2px solid var(--teal);">
-                    <div style="font-size:10px;color:var(--gray-400);font-weight:600;">WEEKLY RATE</div>
-                    <div style="font-size:20px;font-weight:800;color:var(--navy);margin-top:2px;">£870</div>
-                </div>
-                <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:12px;text-align:center;border:2px solid var(--teal);">
-                    <div style="font-size:10px;color:var(--gray-400);font-weight:600;">AVAILABLE</div>
-                    <div style="font-size:20px;font-weight:800;color:var(--navy);margin-top:2px;">Today</div>
-                </div>
-            </div>
-            <div style="font-size:12px;color:var(--gray-500);background:var(--gray-50);border-radius:8px;padding:10px;margin-bottom:12px;">
-                "Specialist dementia unit with experienced PEG care team. En-suite room available on ground floor."
-            </div>
+        <div class="wa-bubble outgoing">
+          ✅ Available today · £870/wk · En-suite room, ground floor. PEG experienced team.
+          <div class="wa-time">09:31 ✓✓</div>
         </div>
-        <div class="bottom-action">
-            <button class="btn btn-primary" onclick="submitBid1()">✅ Submit Bid — Thistle Hill Hall</button>
-        </div>
+      </div>
     </div>
 
-    <!-- SCREEN 4: More bids come in -->
+    <!-- Screen 4: Responses Dashboard -->
     <div class="screen" id="screen4">
-        <div class="narrator">
-            <span class="narrator-icon">📖</span>
-            <span class="narrator-text"><strong>2 hours later.</strong> Three care homes have responded. Sarah gets a push notification and opens her bids comparison.</span>
+      <div class="response-list">
+        <div class="response-card available">
+          <div class="rc-top">
+            <span class="rc-name">Thistle Hill Hall</span>
+            <span class="rc-status green">✅ Available</span>
+          </div>
+          <div class="rc-details">
+            <span>📅 <strong>Today</strong></span>
+            <span>💷 <strong>£870/wk</strong></span>
+            <span>⭐ Outstanding</span>
+            <span>📍 4.2 mi</span>
+          </div>
+          <div class="rc-note">"En-suite, PEG experienced"</div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step current"></div>
-            <div class="progress-step"></div>
-            <div class="progress-step"></div>
+
+        <div class="response-card available">
+          <div class="rc-top">
+            <span class="rc-name">Chestnut Lodge</span>
+            <span class="rc-status green">✅ Available</span>
+          </div>
+          <div class="rc-details">
+            <span>📅 <strong>Thursday</strong></span>
+            <span>💷 <strong>£890/wk</strong></span>
+            <span>⭐ Outstanding</span>
+            <span>📍 0.3 mi</span>
+          </div>
+          <div class="rc-note">"Assessment call preferred first"</div>
         </div>
-        <div class="section">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div>
-                    <div style="font-size:16px;font-weight:700;">Request #4826</div>
-                    <div style="font-size:12px;color:var(--gray-500);">3 bids received · Tap to select</div>
-                </div>
-                <span class="badge badge-green">3 BIDS</span>
-            </div>
 
-            <!-- Bid A: Thistle Hill Hall -->
-            <div class="response-card bid-card" onclick="selectBid(this, 'A')">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                    <div>
-                        <div style="font-size:14px;font-weight:700;">Home A</div>
-                        <div style="font-size:11px;color:var(--gray-500);">CQC Outstanding ⭐⭐⭐⭐ · 4.2mi</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:18px;font-weight:800;color:var(--teal);">£870/wk</div>
-                        <div style="font-size:11px;color:var(--gray-400);">Available today</div>
-                    </div>
-                </div>
-                <div style="font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:6px;padding:8px;">
-                    "Specialist dementia unit with experienced PEG care team. En-suite room available on ground floor."
-                </div>
-                <div style="display:flex;gap:4px;margin-top:8px;">
-                    <span class="badge badge-green">Specialist Dementia</span>
-                    <span class="badge badge-teal">PEG Experienced</span>
-                    <span class="badge badge-blue">En-suite</span>
-                </div>
-            </div>
-
-            <!-- Bid B: Roefield -->
-            <div class="response-card bid-card" onclick="selectBid(this, 'B')" style="animation-delay:0.1s;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                    <div>
-                        <div style="font-size:14px;font-weight:700;">Home B</div>
-                        <div style="font-size:11px;color:var(--gray-500);">CQC Good ⭐⭐⭐ · 6.1mi</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:18px;font-weight:800;color:var(--teal);">£850/wk</div>
-                        <div style="font-size:11px;color:var(--gray-400);">Available Thursday</div>
-                    </div>
-                </div>
-                <div style="font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:6px;padding:8px;">
-                    "Nursing unit with dementia wing. PEG care available. Shared room initially, single available next week."
-                </div>
-                <div style="display:flex;gap:4px;margin-top:8px;">
-                    <span class="badge badge-teal">Nursing + Dementia</span>
-                    <span class="badge badge-blue">PEG Available</span>
-                </div>
-            </div>
-
-            <!-- Bid C: Thistle Manor -->
-            <div class="response-card bid-card" onclick="selectBid(this, 'C')" style="animation-delay:0.2s;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                    <div>
-                        <div style="font-size:14px;font-weight:700;">Home C</div>
-                        <div style="font-size:11px;color:var(--gray-500);">CQC Good ⭐⭐⭐ · 8.7mi</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:18px;font-weight:800;color:var(--teal);">£920/wk</div>
-                        <div style="font-size:11px;color:var(--gray-400);">Available today</div>
-                    </div>
-                </div>
-                <div style="font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:6px;padding:8px;">
-                    "Premium dementia care with 1:1 hours. Large garden, therapy room. Experienced with complex PEG and behavioural needs."
-                </div>
-                <div style="display:flex;gap:4px;margin-top:8px;">
-                    <span class="badge badge-purple">Premium Dementia</span>
-                    <span class="badge badge-green">1:1 Available</span>
-                    <span class="badge badge-teal">Complex Needs</span>
-                </div>
-            </div>
-
-            <div style="font-size:12px;color:var(--gray-400);text-align:center;margin-top:8px;">
-                All responses are anonymous. Identity revealed only after selection.
-            </div>
+        <div class="response-card unavailable">
+          <div class="rc-top">
+            <span class="rc-name">Sunrise Care</span>
+            <span class="rc-status red">❌ No availability</span>
+          </div>
+          <div class="rc-details">
+            <span>No availability this week</span>
+          </div>
         </div>
-        <div class="bottom-action">
-            <button class="btn btn-primary" id="selectBtn" onclick="confirmSelection()" disabled style="opacity:0.5;">Select a home above</button>
+
+        <div class="response-card pending">
+          <div class="rc-top">
+            <span class="rc-name">Albany Lodge</span>
+            <span class="rc-status orange">⏳ No response</span>
+          </div>
+          <div class="rc-details">
+            <span>Sent 2h ago · No reply yet</span>
+          </div>
+          <button class="nudge-btn">📲 Send Nudge</button>
         </div>
+      </div>
     </div>
 
-    <!-- SCREEN 5: Connection revealed -->
+    <!-- Screen 5: Connection Confirmed -->
     <div class="screen" id="screen5">
-        <div class="narrator">
-            <span class="narrator-icon">📖</span>
-            <span class="narrator-text"><strong>Sarah selects Home A.</strong> Identity is revealed to both sides. Thistle Hill Hall sees the commissioner details. Delphi takes over to guide the admission.</span>
+      <div class="connection-card">
+        <div class="cc-header">
+          <div class="cc-icon">🤝</div>
+          <div class="cc-title">Connection Made</div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step current"></div>
-            <div class="progress-step"></div>
+        <div class="cc-details">
+          <div class="cc-row">
+            <span class="cc-row-icon">🏠</span>
+            <span class="cc-row-value" style="margin-left:0;font-weight:700;">Thistle Hill Hall</span>
+          </div>
+          <div class="cc-row">
+            <span class="cc-row-icon">📞</span>
+            <span class="cc-row-label">Phone</span>
+            <span class="cc-row-value">020 8XXX XXXX</span>
+          </div>
+          <div class="cc-row">
+            <span class="cc-row-icon">✉️</span>
+            <span class="cc-row-label">Email</span>
+            <span class="cc-row-value">manager@thistlehill.co.uk</span>
+          </div>
+          <div class="cc-row">
+            <span class="cc-row-icon">📍</span>
+            <span class="cc-row-label">Address</span>
+            <span class="cc-row-value">Croydon, CR0</span>
+          </div>
+          <div class="cc-row">
+            <span class="cc-row-icon">💷</span>
+            <span class="cc-row-label">Rate</span>
+            <span class="cc-row-value" style="color:var(--teal);font-weight:800;">£870/wk</span>
+          </div>
+          <div class="cc-row">
+            <span class="cc-row-icon">📅</span>
+            <span class="cc-row-label">Availability</span>
+            <span class="cc-row-value" style="color:var(--green);">Today</span>
+          </div>
         </div>
-        <div class="section">
-            <div class="reveal">
-                <div class="reveal-icon">🎉</div>
-                <div class="reveal-title">Bed secured. Patient placed.</div>
-                <div class="reveal-sub">Request #4826 · Placed in 2.1 hours</div>
-            </div>
 
-            <div class="card" style="text-align:center;border-color:var(--teal);">
-                <div style="font-size:12px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Identity Revealed</div>
-                <div style="font-size:18px;font-weight:700;">Thistle Hill Hall</div>
-                <div style="font-size:13px;color:var(--gray-500);margin-top:2px;">CQC Outstanding · Croydon · 4.2mi</div>
-                <div style="font-size:13px;color:var(--gray-500);">📧 admissions@thistlehillhall.co.uk</div>
-                <div style="font-size:13px;color:var(--gray-500);">📱 020 8401 2847</div>
-                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-200);font-size:12px;color:var(--gray-400);">
-                    £870/wk · En-suite · Available today
-                </div>
-            </div>
+        <div class="fee-box">
+          <strong>SwiftPlace success fee: £1,872</strong><br>
+          4% of annual placement value (£870 × 52 = £45,240)<br>
+          <div class="fee-note">
+            💡 This fee applies because Sarah found Thistle Hill Hall via CQC search. Homes already in her contacts: <strong>£0 fee</strong>.
+          </div>
+        </div>
 
-            <!-- Delphi Concierge -->
-            <div class="delphi-box">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-                    <span style="font-size:18px;">🤖</span>
-                    <span style="font-weight:700;font-size:14px;">Delphi Placement Assistant</span>
-                    <span style="background:rgba(94,234,212,0.2);color:#5eead4;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">AI-GUIDED</span>
-                </div>
-                <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:12px;">
-                    I'm now guiding both sides through to admission. All patient data flows directly between commissioner and care home — SwiftPlace never sees identifiable information.
-                </div>
-                <div class="delphi-step active">
-                    <span style="color:#5eead4;font-weight:700;">1</span>
-                    <span>📋 Collecting clinical docs from commissioner</span>
-                    <span style="margin-left:auto;background:#5eead4;color:#0f172a;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;">NOW</span>
-                </div>
-                <div class="delphi-step pending">
-                    <span style="font-weight:700;">2</span>
-                    <span>📞 Scheduling assessment call</span>
-                </div>
-                <div class="delphi-step pending">
-                    <span style="font-weight:700;">3</span>
-                    <span>🏥 Pre-admission checklist</span>
-                </div>
-                <div class="delphi-step pending">
-                    <span style="font-weight:700;">4</span>
-                    <span>📝 Contract & funding confirmation</span>
-                </div>
-                <div class="delphi-step pending">
-                    <span style="font-weight:700;">5</span>
-                    <span>🚗 Admission day coordination</span>
-                </div>
-                <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px;color:rgba(255,255,255,0.5);">
-                    🔒 SwiftPlace is a marketplace only. No patient-identifiable data touches our platform. Delphi operates under the care home's data processing agreement.
-                </div>
-            </div>
+        <div class="privacy-box">
+          <span>🔒</span>
+          <span>SwiftPlace never sees patient-identifiable information. All clinical details flow directly between commissioner and care home.</span>
         </div>
-        <div class="bottom-action">
-            <button class="btn btn-dark" onclick="showOutcome()">📊 View Outcome Summary →</button>
-        </div>
+      </div>
     </div>
 
-    <!-- SCREEN 6: Outcome / Summary -->
+    <!-- Screen 6: Outcome -->
     <div class="screen" id="screen6">
-        <div class="narrator">
-            <span class="narrator-icon">📖</span>
-            <span class="narrator-text"><strong>Result:</strong> Patient placed in 2.1 hours. Commissioner saved 6+ hours. Care home filled an empty bed worth £45,240/year. Delphi is handling the admin.</span>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">2.1h</div>
+          <div class="stat-label">Time to Place</div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
-            <div class="progress-step done"></div>
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Homes Responded</div>
         </div>
-        <div class="section">
-            <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Placement #4826 — Outcome</div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:24px;font-weight:800;color:var(--teal);">2.1h</div>
-                    <div style="font-size:11px;color:var(--gray-500);">Time to place</div>
-                </div>
-                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:24px;font-weight:800;color:var(--teal);">3</div>
-                    <div style="font-size:11px;color:var(--gray-500);">Competing bids</div>
-                </div>
-                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:24px;font-weight:800;color:var(--teal);">£870</div>
-                    <div style="font-size:11px;color:var(--gray-500);">Winning bid/wk</div>
-                </div>
-                <div style="background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:24px;font-weight:800;color:var(--teal);">£45.2K</div>
-                    <div style="font-size:11px;color:var(--gray-500);">Annual revenue</div>
-                </div>
-            </div>
-
-            <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Who won:</div>
-
-            <div class="card">
-                <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px;">👤 Commissioner (Sarah)</div>
-                <div style="font-size:12px;color:var(--gray-600);">
-                    → Placed patient in 2.1 hours (usually 4-8 hours)<br>
-                    → Compared 3 bids transparently<br>
-                    → Saved £30/week vs budget (£900 budget → £870 winning bid)<br>
-                    → Full audit trail for reporting<br>
-                    → Delphi handling admin → back to next patient
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">🏠 Thistle Hill Hall</div>
-                <div style="font-size:12px;color:var(--gray-600);">
-                    → Empty bed filled same day<br>
-                    → £45,240/year in new revenue<br>
-                    → Success fee: £1,810 (4% of annual value) — after 30 days<br>
-                    → Net gain: £43,430/year<br>
-                    → Delphi collecting clinical docs — no admin burden
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:8px;">⚡ SwiftPlace</div>
-                <div style="font-size:12px;color:var(--gray-600);">
-                    → Revenue: £1,810 success fee (after 30-day confirmation)<br>
-                    → Data: Placement pricing, response time, demand pattern captured<br>
-                    → Network: Both sides likely to return for next placement<br>
-                    → Zero patient data touched — GDPR clean
-                </div>
-            </div>
-
-            <div style="background:rgba(13,148,136,0.05);border:2px solid var(--teal);border-radius:12px;padding:16px;text-align:center;margin-top:16px;">
-                <div style="font-size:16px;font-weight:800;color:var(--teal-dark);">Everyone won. Nobody lost.</div>
-                <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">That's the SwiftPlace model.</div>
-            </div>
+        <div class="stat-card">
+          <div class="stat-value">£870</div>
+          <div class="stat-label">Weekly Rate</div>
         </div>
-        <div class="bottom-action">
-            <button class="btn btn-primary" onclick="restart()">🔄 Run Demo Again</button>
+        <div class="stat-card">
+          <div class="stat-value">£45.2K</div>
+          <div class="stat-label">Annual Revenue</div>
         </div>
+      </div>
+
+      <div class="wins-section">
+        <div class="wins-block commissioner">
+          <div class="wins-title">👤 Commissioner Wins</div>
+          <ul class="wins-list">
+            <li>Placed in 2.1 hours (not 8+)</li>
+            <li>Compared 3 responses side-by-side</li>
+            <li>Saved £30/wk vs budget</li>
+            <li>Back to next patient</li>
+          </ul>
+        </div>
+
+        <div class="wins-block carehome">
+          <div class="wins-title">🏠 Care Home Wins</div>
+          <ul class="wins-list">
+            <li>Bed filled same day</li>
+            <li>£45,240/year revenue</li>
+            <li>Fee: £1,872 (4%)</li>
+            <li>Net: £43,368</li>
+          </ul>
+        </div>
+
+        <div class="wins-block swiftplace">
+          <div class="wins-title">⚡ SwiftPlace Wins</div>
+          <ul class="wins-list">
+            <li>£1,872 success fee</li>
+            <li>No patient data touched</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="everyone-box">
+        Everyone won. Nobody lost.
+        <div class="sub">The right placement, found fast.</div>
+      </div>
     </div>
+  </div>
+
+  <!-- Bottom Action -->
+  <div class="bottom-bar">
+    <button class="btn-primary" id="actionBtn" onclick="nextScreen()"></button>
+  </div>
 </div>
 
 <script>
-    let selectedHome = null;
+const screens = [
+  {
+    narrator: 'Sarah, discharge coordinator at Croydon Hospital, needs to place an 82yr male with dementia + nursing. She opens SwiftPlace.',
+    viewLabel: '👤 Commissioner',
+    button: 'Create Case',
+  },
+  {
+    narrator: 'Sarah selects homes from her contacts and the CQC directory. She records one voice note describing what she needs.',
+    viewLabel: '👤 Commissioner',
+    button: '⚡ Send to 4 homes',
+  },
+  {
+    narrator: "Meanwhile at Thistle Hill Hall… the manager's phone buzzes. A WhatsApp voice note from a commissioner they've never worked with.",
+    viewLabel: '🏠 Thistle Hill Hall',
+    button: "See Commissioner's View →",
+  },
+  {
+    narrator: '2 hours later. Three homes have replied. Sarah opens her responses dashboard.',
+    viewLabel: '👤 Commissioner',
+    button: 'Select Thistle Hill Hall',
+  },
+  {
+    narrator: 'Sarah selects Thistle Hill Hall. Direct connection made. No middleman.',
+    viewLabel: '🔗 Connected',
+    button: '📊 View Outcome',
+  },
+  {
+    narrator: 'Result: Patient placed in 2.1 hours. Commissioner saved 6+ hours of phone calls. Care home filled an empty bed worth £45,240/year.',
+    viewLabel: '📊 Outcome',
+    button: '🔄 Run Demo Again',
+  },
+];
 
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
+let current = 0;
 
-    function postRequest() {
-        showScreen('screen2');
-        document.getElementById('viewLabel').textContent = '👤 Commissioner';
-    }
+function renderWaveform() {
+  const wf = document.getElementById('waveform');
+  if (!wf) return;
+  wf.innerHTML = '';
+  const heights = [8,14,10,18,22,16,12,20,14,8,18,24,16,10,14,20,12,8,16,22,18,14,10,20,16,12,8,14,18,10];
+  heights.forEach(h => {
+    const bar = document.createElement('span');
+    bar.style.height = h + 'px';
+    wf.appendChild(bar);
+  });
+}
 
-    function showCareHomeNotifications() {
-        showScreen('screen3');
-        document.getElementById('viewLabel').textContent = '🏠 Thistle Hill Hall';
-    }
+function showScreen(index) {
+  const data = screens[index];
 
-    function submitBid1() {
-        showScreen('screen4');
-        document.getElementById('viewLabel').textContent = '👤 Commissioner';
-    }
+  // Progress
+  document.querySelectorAll('.progress-step').forEach((step, i) => {
+    step.className = 'progress-step';
+    if (i < index) step.classList.add('done');
+    if (i === index) step.classList.add('active');
+  });
 
-    function selectBid(card, home) {
-        document.querySelectorAll('.response-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedHome = home;
-        const btn = document.getElementById('selectBtn');
-        const names = { A: 'Thistle Hill Hall', B: 'Roefield Specialist Care', C: 'Thistle Manor' };
-        btn.textContent = '✅ Select Home ' + home + ' — Confirm';
-        btn.disabled = false;
-        btn.style.opacity = '1';
-    }
+  // Narrator
+  document.getElementById('narrator').textContent = data.narrator;
 
-    function confirmSelection() {
-        if (!selectedHome) return;
-        showScreen('screen5');
-        document.getElementById('viewLabel').textContent = '🔗 Connected';
-    }
+  // View label
+  document.getElementById('viewLabel').textContent = data.viewLabel;
 
-    function showOutcome() {
-        showScreen('screen6');
-        document.getElementById('viewLabel').textContent = '📊 Outcome';
-    }
+  // Screens
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen' + (index + 1)).classList.add('active');
 
-    function restart() {
-        selectedHome = null;
-        document.querySelectorAll('.response-card').forEach(c => c.classList.remove('selected'));
-        document.getElementById('selectBtn').textContent = 'Select a home above';
-        document.getElementById('selectBtn').disabled = true;
-        document.getElementById('selectBtn').style.opacity = '0.5';
-        showScreen('screen1');
-        document.getElementById('viewLabel').textContent = '👤 Commissioner';
-    }
+  // Button
+  document.getElementById('actionBtn').textContent = data.button;
+
+  // Waveform for screen 3
+  if (index === 2) {
+    setTimeout(renderWaveform, 50);
+  }
+
+  // Scroll to top
+  document.getElementById('screenContent').scrollTop = 0;
+}
+
+function nextScreen() {
+  if (current >= screens.length - 1) {
+    current = 0;
+  } else {
+    current++;
+  }
+  showScreen(current);
+}
+
+// Init
+showScreen(0);
 </script>
 
 </body>
